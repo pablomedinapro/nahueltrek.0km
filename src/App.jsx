@@ -1,7 +1,58 @@
 import './App.css'
 import logo from './assets/logo.png'
+import { useState } from 'react'
 
 function App() {
+  // Datos de ejemplo para las próximas actividades
+  const [actividades] = useState([
+    {
+      id: 1,
+      fecha: '2025-11-15',
+      titulo: 'Trekking Cerro Campanario',
+      descripcion: 'Caminata de 4 horas con vista panorámica',
+      dificultad: 'Media',
+      cupos: 12
+    },
+    {
+      id: 2,
+      fecha: '2025-11-22',
+      titulo: 'Expedición Laguna Azul',
+      descripcion: 'Travesía de día completo por paisajes únicos',
+      dificultad: 'Alta',
+      cupos: 8
+    },
+    {
+      id: 3,
+      fecha: '2025-11-30',
+      titulo: 'Sendero Bosque Nativo',
+      descripcion: 'Caminata interpretativa de flora y fauna',
+      dificultad: 'Baja',
+      cupos: 15
+    },
+    {
+      id: 4,
+      fecha: '2025-12-06',
+      titulo: 'Trekking Refugio Frey',
+      descripcion: 'Ascenso al refugio con camping nocturno',
+      dificultad: 'Alta',
+      cupos: 10
+    }
+  ])
+
+  const formatearFecha = (fecha) => {
+    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+    return new Date(fecha + 'T00:00:00').toLocaleDateString('es-ES', opciones)
+  }
+
+  const getDificultadColor = (dificultad) => {
+    switch(dificultad) {
+      case 'Baja': return '#4caf50'
+      case 'Media': return '#ff9800'
+      case 'Alta': return '#f44336'
+      default: return '#757575'
+    }
+  }
+
   return (
     <div className="App">
       <nav style={{
@@ -35,6 +86,112 @@ function App() {
         <h1>Bienvenido a Nahueltrek</h1>
         <p>Tu aventura comienza aquí</p>
       </div>
+
+      {/* Sección de Calendario de Actividades */}
+      <section style={{
+        maxWidth: '1200px',
+        margin: '0 auto 3rem auto',
+        padding: '2rem',
+      }}>
+        <h2 style={{ textAlign: 'center', color: '#1e3a5f', marginBottom: '2rem' }}>
+          📅 Próximas Actividades
+        </h2>
+        
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '1.5rem'
+        }}>
+          {actividades.map((actividad) => (
+            <div key={actividad.id} style={{
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+              overflow: 'hidden',
+              transition: 'transform 0.3s ease',
+              cursor: 'pointer',
+              border: '2px solid #e0e0e0'
+            }}>
+              <div style={{
+                backgroundColor: '#1e3a5f',
+                color: 'white',
+                padding: '1rem',
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>
+                  {formatearFecha(actividad.fecha)}
+                </div>
+              </div>
+              
+              <div style={{ padding: '1.5rem' }}>
+                <h3 style={{ 
+                  color: '#1e3a5f', 
+                  marginBottom: '0.5rem',
+                  fontSize: '1.3rem'
+                }}>
+                  {actividad.titulo}
+                </h3>
+                
+                <p style={{ 
+                  color: '#666', 
+                  marginBottom: '1rem',
+                  lineHeight: '1.6'
+                }}>
+                  {actividad.descripcion}
+                </p>
+                
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: '1rem',
+                  paddingTop: '1rem',
+                  borderTop: '1px solid #e0e0e0'
+                }}>
+                  <div>
+                    <span style={{
+                      backgroundColor: getDificultadColor(actividad.dificultad),
+                      color: 'white',
+                      padding: '0.3rem 0.8rem',
+                      borderRadius: '20px',
+                      fontSize: '0.85rem',
+                      fontWeight: 'bold'
+                    }}>
+                      {actividad.dificultad}
+                    </span>
+                  </div>
+                  
+                  <div style={{ 
+                    color: '#666',
+                    fontSize: '0.9rem'
+                  }}>
+                    👥 {actividad.cupos} cupos
+                  </div>
+                </div>
+                
+                <button style={{
+                  width: '100%',
+                  marginTop: '1rem',
+                  padding: '0.8rem',
+                  backgroundColor: '#1e3a5f',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#2c5282'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#1e3a5f'}
+                >
+                  Reservar
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* Sección NDR */}
       <section style={{
