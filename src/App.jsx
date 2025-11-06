@@ -35,6 +35,92 @@ function App() {
         <h1>Bienvenido a Nahueltrek</h1>
         <p>Tu aventura comienza aquí</p>
       </div>
+
+      {/* Sección NDR */}
+      <section style={{
+        maxWidth: '1000px',
+        margin: '0 auto',
+        padding: '2rem',
+        textAlign: 'left',
+        backgroundColor: '#f5f5f5',
+        borderRadius: '10px'
+      }}>
+        <h2 style={{ textAlign: 'center', color: '#1e3a5f', marginBottom: '1.5rem' }}>
+          🏕️ Los 7 Principios de "No Deje Rastro" (NDR)
+        </h2>
+        <p style={{ textAlign: 'center', marginBottom: '2rem', fontSize: '1.1rem' }}>
+          El programa No Deje Rastro (Leave No Trace) ofrece una guía sencilla para minimizar nuestro impacto en los ambientes naturales. Aplicar estos principios es esencial para la conservación y el disfrute de la naturaleza por todos.
+        </p>
+
+        <div style={{ display: 'grid', gap: '1.5rem' }}>
+          <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+            <h3 style={{ color: '#1e3a5f', marginBottom: '1rem' }}>1. Planifique y prepare su viaje con anticipación.</h3>
+            <ul style={{ lineHeight: '1.8' }}>
+              <li>Investigue el área y las regulaciones locales.</li>
+              <li>Lleve el equipo adecuado para el clima y el terreno.</li>
+              <li>Reempaque los alimentos para reducir la basura y lleve bolsas para recoger todos sus desechos.</li>
+            </ul>
+          </div>
+
+          <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+            <h3 style={{ color: '#1e3a5f', marginBottom: '1rem' }}>2. Viaje y acampe sobre superficies durables.</h3>
+            <ul style={{ lineHeight: '1.8' }}>
+              <li>Use siempre los senderos y sitios de campamento ya establecidos.</li>
+              <li>Evite caminar o acampar en vegetación frágil o áreas sensibles como praderas alpinas.</li>
+              <li>Mantenga los sitios de acampada pequeños para minimizar el impacto.</li>
+            </ul>
+          </div>
+
+          <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+            <h3 style={{ color: '#1e3a5f', marginBottom: '1rem' }}>3. Disponga de los desechos de la manera más apropiada.</h3>
+            <ul style={{ lineHeight: '1.8' }}>
+              <li>Empaque toda su basura (incluyendo restos de comida, cáscaras y papel higiénico) y llévela de vuelta.</li>
+              <li>Deposite los desechos humanos a 60-70 metros (200 pies) de fuentes de agua, senderos o campamentos, cavando un "hoyo de gato" de 15-20 cm de profundidad.</li>
+              <li>Lave platos y asee su cuerpo a 60 metros de distancia de fuentes de agua.</li>
+            </ul>
+          </div>
+
+          <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+            <h3 style={{ color: '#1e3a5f', marginBottom: '1rem' }}>4. Deje lo que encuentre.</h3>
+            <ul style={{ lineHeight: '1.8' }}>
+              <li>No recoja ni se lleve objetos naturales o culturales (rocas, plantas, artefactos, conchas).</li>
+              <li>Evite construir estructuras, cavar zanjas o alterar el sitio de cualquier forma.</li>
+              <li>Deje los objetos naturales y el entorno tal como los encontró.</li>
+            </ul>
+          </div>
+
+          <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+            <h3 style={{ color: '#1e3a5f', marginBottom: '1rem' }}>5. Minimice el impacto de las fogatas.</h3>
+            <ul style={{ lineHeight: '1.8' }}>
+              <li>Considere usar una cocinilla o estufa de campamento para cocinar.</li>
+              <li>Si hace fuego, use los anillos o áreas designadas para fogatas.</li>
+              <li>Mantenga las fogatas pequeñas y use solo leña caída y muerta del suelo. Nunca corte árboles vivos.</li>
+            </ul>
+          </div>
+
+          <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+            <h3 style={{ color: '#1e3a5f', marginBottom: '1rem' }}>6. Respete la vida silvestre.</h3>
+            <ul style={{ lineHeight: '1.8' }}>
+              <li>Observe a los animales desde una distancia segura.</li>
+              <li>Nunca alimente a los animales, ya que esto daña su salud y altera su comportamiento natural.</li>
+              <li>Guarde la comida y la basura de manera segura para evitar atraer a la fauna.</li>
+            </ul>
+          </div>
+
+          <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+            <h3 style={{ color: '#1e3a5f', marginBottom: '1rem' }}>7. Sea considerado con otros visitantes.</h3>
+            <ul style={{ lineHeight: '1.8' }}>
+              <li>Ceda el paso en los senderos y sea cortés.</li>
+              <li>Evite el ruido excesivo para permitir que otros disfruten de los sonidos de la naturaleza.</li>
+              <li>Mantenga a sus mascotas bajo control o evite llevarlas si no están permitidas.</li>
+            </ul>
+          </div>
+        </div>
+
+        <p style={{ textAlign: 'center', marginTop: '2rem', fontSize: '1.2rem', fontWeight: 'bold', color: '#1e3a5f' }}>
+          Protejamos y disfrutemos juntos de nuestro mundo natural.
+        </p>
+      </section>
     </div>
   )
 }
