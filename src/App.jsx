@@ -71,7 +71,6 @@ function App() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <img src={logo} alt="Nahuel Trek Logo" style={{ width: '50px', height: '50px', borderRadius: '50%' }} />
-          <h2 style={{ margin: 0, fontSize: 'clamp(1.2rem, 4vw, 1.5rem)' }}>Nahueltrek</h2>
         </div>
         
         {/* Menú Desktop */}
