@@ -3,6 +3,15 @@ import logo from './assets/logo.png'
 import { useState, useEffect } from 'react'
 import Admin from './components/Admin'
 
+// Importar imágenes NDR
+import ndr1 from '../img/025ebb3e-a026-4ff8-b944-4460656eb26e.jfif'
+import ndr2 from '../img/5eb8231e-9e88-4075-9eee-5b88f0638a57.jfif'
+import ndr3 from '../img/8b79bfad-492d-4ecd-9999-f7d2e976fb46.jfif'
+import ndr4 from '../img/c73fb977-c565-496b-b591-54b3e9a10e8a.jfif'
+import ndr5 from '../img/c75d4c7f-4b37-4ba6-8af5-c0292a86ba26.jfif'
+import ndr6 from '../img/d6a66ad7-3bbb-498c-b8d1-a33d65726a94.jfif'
+import ndr7 from '../img/1e33a31e-d9fc-4aa7-b8a1-1109f8cff0df.jfif'
+
 function App() {
   const [menuAbierto, setMenuAbierto] = useState(false)
   const [formularioAbierto, setFormularioAbierto] = useState(false)
@@ -932,11 +941,18 @@ ${formData.mensaje || 'Sin mensaje adicional'}
           </p>
 
           <div className="row g-4">
+            {/* Principio 1 */}
             <div className="col-12">
               <div className="card border-0 shadow-sm">
-                <div className="card-body p-4">
+                <img 
+                  src={ndr1}
+                  alt="Planificación de viaje" 
+                  className="card-img-top"
+                  style={{ height: '250px', objectFit: 'cover' }}
+                />
+                <div className="card-body p-4 text-center">
                   <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>1. Planifique y prepare su viaje con anticipación.</h3>
-                  <ul className="lh-lg">
+                  <ul className="lh-lg text-start">
                     <li>Investigue el área y las regulaciones locales.</li>
                     <li>Lleve el equipo adecuado para el clima y el terreno.</li>
                     <li>Reempaque los alimentos para reducir la basura y lleve bolsas para recoger todos sus desechos.</li>
@@ -945,11 +961,18 @@ ${formData.mensaje || 'Sin mensaje adicional'}
               </div>
             </div>
 
+            {/* Principio 2 */}
             <div className="col-12">
               <div className="card border-0 shadow-sm">
-                <div className="card-body p-4">
+                <img 
+                  src={ndr2}
+                  alt="Sendero establecido" 
+                  className="card-img-top"
+                  style={{ height: '250px', objectFit: 'cover' }}
+                />
+                <div className="card-body p-4 text-center">
                   <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>2. Viaje y acampe sobre superficies durables.</h3>
-                  <ul className="lh-lg">
+                  <ul className="lh-lg text-start">
                     <li>Use siempre los senderos y sitios de campamento ya establecidos.</li>
                     <li>Evite caminar o acampar en vegetación frágil o áreas sensibles como praderas alpinas.</li>
                     <li>Mantenga los sitios de acampada pequeños para minimizar el impacto.</li>
@@ -958,11 +981,18 @@ ${formData.mensaje || 'Sin mensaje adicional'}
               </div>
             </div>
 
+            {/* Principio 3 */}
             <div className="col-12">
               <div className="card border-0 shadow-sm">
-                <div className="card-body p-4">
+                <img 
+                  src={ndr3}
+                  alt="Manejo de desechos" 
+                  className="card-img-top"
+                  style={{ height: '250px', objectFit: 'cover' }}
+                />
+                <div className="card-body p-4 text-center">
                   <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>3. Disponga de los desechos de la manera más apropiada.</h3>
-                  <ul className="lh-lg">
+                  <ul className="lh-lg text-start">
                     <li>Empaque toda su basura (incluyendo restos de comida, cáscaras y papel higiénico) y llévela de vuelta.</li>
                     <li>Deposite los desechos humanos a 60-70 metros (200 pies) de fuentes de agua, senderos o campamentos, cavando un "hoyo de gato" de 15-20 cm de profundidad.</li>
                     <li>Lave platos y asee su cuerpo a 60 metros de distancia de fuentes de agua.</li>
@@ -971,11 +1001,18 @@ ${formData.mensaje || 'Sin mensaje adicional'}
               </div>
             </div>
 
+            {/* Principio 4 */}
             <div className="col-12">
               <div className="card border-0 shadow-sm">
-                <div className="card-body p-4">
+                <img 
+                  src={ndr4}
+                  alt="Naturaleza intacta" 
+                  className="card-img-top"
+                  style={{ height: '250px', objectFit: 'cover' }}
+                />
+                <div className="card-body p-4 text-center">
                   <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>4. Deje lo que encuentre.</h3>
-                  <ul className="lh-lg">
+                  <ul className="lh-lg text-start">
                     <li>No recoja ni se lleve objetos naturales o culturales (rocas, plantas, artefactos, conchas).</li>
                     <li>Evite construir estructuras, cavar zanjas o alterar el sitio de cualquier forma.</li>
                     <li>Deje los objetos naturales y el entorno tal como los encontró.</li>
@@ -984,11 +1021,18 @@ ${formData.mensaje || 'Sin mensaje adicional'}
               </div>
             </div>
 
+            {/* Principio 5 */}
             <div className="col-12">
               <div className="card border-0 shadow-sm">
-                <div className="card-body p-4">
+                <img 
+                  src={ndr5}
+                  alt="Fogata responsable" 
+                  className="card-img-top"
+                  style={{ height: '250px', objectFit: 'cover' }}
+                />
+                <div className="card-body p-4 text-center">
                   <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>5. Minimice el impacto de las fogatas.</h3>
-                  <ul className="lh-lg">
+                  <ul className="lh-lg text-start">
                     <li>Considere usar una cocinilla o estufa de campamento para cocinar.</li>
                     <li>Si hace fuego, use los anillos o áreas designadas para fogatas.</li>
                     <li>Mantenga las fogatas pequeñas y use solo leña caída y muerta del suelo. Nunca corte árboles vivos.</li>
@@ -997,11 +1041,18 @@ ${formData.mensaje || 'Sin mensaje adicional'}
               </div>
             </div>
 
+            {/* Principio 6 */}
             <div className="col-12">
               <div className="card border-0 shadow-sm">
-                <div className="card-body p-4">
+                <img 
+                  src={ndr6}
+                  alt="Vida silvestre" 
+                  className="card-img-top"
+                  style={{ height: '250px', objectFit: 'cover' }}
+                />
+                <div className="card-body p-4 text-center">
                   <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>6. Respete la vida silvestre.</h3>
-                  <ul className="lh-lg">
+                  <ul className="lh-lg text-start">
                     <li>Observe a los animales desde una distancia segura.</li>
                     <li>Nunca alimente a los animales, ya que esto daña su salud y altera su comportamiento natural.</li>
                     <li>Guarde la comida y la basura de manera segura para evitar atraer a la fauna.</li>
@@ -1010,18 +1061,25 @@ ${formData.mensaje || 'Sin mensaje adicional'}
               </div>
             </div>
 
-          <div className="col-12">
-            <div className="card border-0 shadow-sm">
-              <div className="card-body p-4">
-                <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>7. Sea considerado con otros visitantes.</h3>
-                <ul className="lh-lg">
-                  <li>Ceda el paso en los senderos y sea cortés.</li>
-                  <li>Evite el ruido excesivo para permitir que otros disfruten de los sonidos de la naturaleza.</li>
-                  <li>Mantenga a sus mascotas bajo control o evite llevarlas si no están permitidas.</li>
-                </ul>
+            {/* Principio 7 */}
+            <div className="col-12">
+              <div className="card border-0 shadow-sm">
+                <img 
+                  src={ndr7}
+                  alt="Visitantes en la naturaleza" 
+                  className="card-img-top"
+                  style={{ height: '250px', objectFit: 'cover' }}
+                />
+                <div className="card-body p-4 text-center">
+                  <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>7. Sea considerado con otros visitantes.</h3>
+                  <ul className="lh-lg text-start">
+                    <li>Ceda el paso en los senderos y sea cortés.</li>
+                    <li>Evite el ruido excesivo para permitir que otros disfruten de los sonidos de la naturaleza.</li>
+                    <li>Mantenga a sus mascotas bajo control o evite llevarlas si no están permitidas.</li>
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
           </div>
 
           <p className="text-center mt-4 fs-5 fw-bold" style={{ color: '#1e3a5f' }}>
