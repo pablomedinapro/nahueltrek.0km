@@ -189,6 +189,14 @@ function App() {
     setAdminAbierto(false)
   }
 
+  const resetearActividades = () => {
+    if (confirm('¿Estás seguro de resetear las actividades a las predeterminadas de diciembre?')) {
+      localStorage.removeItem('nahueltrek_actividades')
+      setActividades(actividadesIniciales)
+      alert('Actividades reseteadas exitosamente')
+    }
+  }
+
   const abrirFormulario = (actividad) => {
     setActividadSeleccionada(actividad)
     setFormularioAbierto(true)
@@ -244,19 +252,17 @@ ${formData.mensaje || 'Sin mensaje adicional'}
 
   return (
     <div className="App" style={{ margin: 0, padding: 0, backgroundColor: '#f8f9fa' }}>
-      <nav className="gradient-bg" style={{
+      <nav className="gradient-bg sticky-top" style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: '1rem 2rem',
         color: 'white',
-        position: 'sticky',
-        top: 0,
         zIndex: 1000,
         boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
         backdropFilter: 'blur(10px)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }} className="fade-in">
+        <div className="d-flex align-items-center fade-in" style={{ gap: '1rem' }}>
           <img 
             src={logo} 
             alt="Nahuel Trek Logo" 
@@ -553,43 +559,33 @@ ${formData.mensaje || 'Sin mensaje adicional'}
       </div>
 
       {/* Sección de Calendario de Actividades */}
-      <section id="actividades" style={{
-        maxWidth: '1200px',
-        margin: '0 auto 3rem auto',
-        padding: '2rem',
-      }} className="fade-in">
-        <h2 style={{ 
-          textAlign: 'center', 
-          fontSize: 'clamp(2rem, 5vw, 3rem)',
-          marginBottom: '3rem',
-          background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a8f 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text'
-        }}>
-          📅 Próximas Actividades
-        </h2>
-        
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '2rem'
-        }}>
-          {actividades.map((actividad) => {
-            const currentImageIndex = carruselIndex[actividad.id] || 0
-            
-            return (
-              <div 
-                key={actividad.id} 
-                className="card-hover"
-                style={{
-                  backgroundColor: 'white',
-                  borderRadius: '16px',
-                  boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
-                  overflow: 'hidden',
-                  border: '1px solid rgba(0,0,0,0.05)'
-                }}
-              >
+      <section id="actividades" className="container-fluid px-3 px-md-4 py-5 fade-in">
+        <div className="container">
+          <h2 className="text-center mb-5" style={{ 
+            fontSize: 'clamp(2rem, 5vw, 3rem)',
+            background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a8f 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            📅 Próximas Actividades
+          </h2>
+          
+          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {actividades.map((actividad) => {
+              const currentImageIndex = carruselIndex[actividad.id] || 0
+              
+              return (
+                <div key={actividad.id} className="col">
+                  <div 
+                    className="card h-100 card-hover"
+                    style={{
+                      borderRadius: '16px',
+                      boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                      overflow: 'hidden',
+                      border: '1px solid rgba(0,0,0,0.05)'
+                    }}
+                  >
                 {/* Carrusel de imágenes */}
                 <div style={{
                   position: 'relative',
@@ -790,107 +786,128 @@ ${formData.mensaje || 'Sin mensaje adicional'}
                     🎒 Reservar Ahora
                   </button>
                 </div>
+                </div>
               </div>
             )
           })}
+          </div>
         </div>
       </section>
 
       {/* Sección NDR */}
-      <section id="ndr" style={{
-        maxWidth: '1000px',
-        margin: '0 auto',
-        padding: '2rem',
-        textAlign: 'left',
-        backgroundColor: '#f5f5f5',
-        borderRadius: '10px'
-      }}>
-        <h2 style={{ textAlign: 'center', color: '#1e3a5f', marginBottom: '1.5rem' }}>
-          🏕️ Los 7 Principios de "No Deje Rastro" (NDR)
-        </h2>
-        <p style={{ textAlign: 'center', marginBottom: '2rem', fontSize: '1.1rem' }}>
-          El programa No Deje Rastro (Leave No Trace) ofrece una guía sencilla para minimizar nuestro impacto en los ambientes naturales. Aplicar estos principios es esencial para la conservación y el disfrute de la naturaleza por todos.
-        </p>
+      <section id="ndr" className="container my-5 py-4">
+        <div className="bg-light rounded-3 p-4 p-md-5">
+          <h2 className="text-center mb-4" style={{ color: '#1e3a5f' }}>
+            🏕️ Los 7 Principios de "No Deje Rastro" (NDR)
+          </h2>
+          <p className="text-center mb-5 fs-5">
+            El programa No Deje Rastro (Leave No Trace) ofrece una guía sencilla para minimizar nuestro impacto en los ambientes naturales. Aplicar estos principios es esencial para la conservación y el disfrute de la naturaleza por todos.
+          </p>
 
-        <div style={{ display: 'grid', gap: '1.5rem' }}>
-          <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ color: '#1e3a5f', marginBottom: '1rem' }}>1. Planifique y prepare su viaje con anticipación.</h3>
-            <ul style={{ lineHeight: '1.8' }}>
-              <li>Investigue el área y las regulaciones locales.</li>
-              <li>Lleve el equipo adecuado para el clima y el terreno.</li>
-              <li>Reempaque los alimentos para reducir la basura y lleve bolsas para recoger todos sus desechos.</li>
-            </ul>
+          <div className="row g-4">
+            <div className="col-12">
+              <div className="card border-0 shadow-sm">
+                <div className="card-body p-4">
+                  <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>1. Planifique y prepare su viaje con anticipación.</h3>
+                  <ul className="lh-lg">
+                    <li>Investigue el área y las regulaciones locales.</li>
+                    <li>Lleve el equipo adecuado para el clima y el terreno.</li>
+                    <li>Reempaque los alimentos para reducir la basura y lleve bolsas para recoger todos sus desechos.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-12">
+              <div className="card border-0 shadow-sm">
+                <div className="card-body p-4">
+                  <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>2. Viaje y acampe sobre superficies durables.</h3>
+                  <ul className="lh-lg">
+                    <li>Use siempre los senderos y sitios de campamento ya establecidos.</li>
+                    <li>Evite caminar o acampar en vegetación frágil o áreas sensibles como praderas alpinas.</li>
+                    <li>Mantenga los sitios de acampada pequeños para minimizar el impacto.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-12">
+              <div className="card border-0 shadow-sm">
+                <div className="card-body p-4">
+                  <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>3. Disponga de los desechos de la manera más apropiada.</h3>
+                  <ul className="lh-lg">
+                    <li>Empaque toda su basura (incluyendo restos de comida, cáscaras y papel higiénico) y llévela de vuelta.</li>
+                    <li>Deposite los desechos humanos a 60-70 metros (200 pies) de fuentes de agua, senderos o campamentos, cavando un "hoyo de gato" de 15-20 cm de profundidad.</li>
+                    <li>Lave platos y asee su cuerpo a 60 metros de distancia de fuentes de agua.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-12">
+              <div className="card border-0 shadow-sm">
+                <div className="card-body p-4">
+                  <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>4. Deje lo que encuentre.</h3>
+                  <ul className="lh-lg">
+                    <li>No recoja ni se lleve objetos naturales o culturales (rocas, plantas, artefactos, conchas).</li>
+                    <li>Evite construir estructuras, cavar zanjas o alterar el sitio de cualquier forma.</li>
+                    <li>Deje los objetos naturales y el entorno tal como los encontró.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-12">
+              <div className="card border-0 shadow-sm">
+                <div className="card-body p-4">
+                  <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>5. Minimice el impacto de las fogatas.</h3>
+                  <ul className="lh-lg">
+                    <li>Considere usar una cocinilla o estufa de campamento para cocinar.</li>
+                    <li>Si hace fuego, use los anillos o áreas designadas para fogatas.</li>
+                    <li>Mantenga las fogatas pequeñas y use solo leña caída y muerta del suelo. Nunca corte árboles vivos.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-12">
+              <div className="card border-0 shadow-sm">
+                <div className="card-body p-4">
+                  <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>6. Respete la vida silvestre.</h3>
+                  <ul className="lh-lg">
+                    <li>Observe a los animales desde una distancia segura.</li>
+                    <li>Nunca alimente a los animales, ya que esto daña su salud y altera su comportamiento natural.</li>
+                    <li>Guarde la comida y la basura de manera segura para evitar atraer a la fauna.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          <div className="col-12">
+            <div className="card border-0 shadow-sm">
+              <div className="card-body p-4">
+                <h3 className="card-title h5 mb-3" style={{ color: '#1e3a5f' }}>7. Sea considerado con otros visitantes.</h3>
+                <ul className="lh-lg">
+                  <li>Ceda el paso en los senderos y sea cortés.</li>
+                  <li>Evite el ruido excesivo para permitir que otros disfruten de los sonidos de la naturaleza.</li>
+                  <li>Mantenga a sus mascotas bajo control o evite llevarlas si no están permitidas.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
           </div>
 
-          <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ color: '#1e3a5f', marginBottom: '1rem' }}>2. Viaje y acampe sobre superficies durables.</h3>
-            <ul style={{ lineHeight: '1.8' }}>
-              <li>Use siempre los senderos y sitios de campamento ya establecidos.</li>
-              <li>Evite caminar o acampar en vegetación frágil o áreas sensibles como praderas alpinas.</li>
-              <li>Mantenga los sitios de acampada pequeños para minimizar el impacto.</li>
-            </ul>
-          </div>
-
-          <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ color: '#1e3a5f', marginBottom: '1rem' }}>3. Disponga de los desechos de la manera más apropiada.</h3>
-            <ul style={{ lineHeight: '1.8' }}>
-              <li>Empaque toda su basura (incluyendo restos de comida, cáscaras y papel higiénico) y llévela de vuelta.</li>
-              <li>Deposite los desechos humanos a 60-70 metros (200 pies) de fuentes de agua, senderos o campamentos, cavando un "hoyo de gato" de 15-20 cm de profundidad.</li>
-              <li>Lave platos y asee su cuerpo a 60 metros de distancia de fuentes de agua.</li>
-            </ul>
-          </div>
-
-          <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ color: '#1e3a5f', marginBottom: '1rem' }}>4. Deje lo que encuentre.</h3>
-            <ul style={{ lineHeight: '1.8' }}>
-              <li>No recoja ni se lleve objetos naturales o culturales (rocas, plantas, artefactos, conchas).</li>
-              <li>Evite construir estructuras, cavar zanjas o alterar el sitio de cualquier forma.</li>
-              <li>Deje los objetos naturales y el entorno tal como los encontró.</li>
-            </ul>
-          </div>
-
-          <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ color: '#1e3a5f', marginBottom: '1rem' }}>5. Minimice el impacto de las fogatas.</h3>
-            <ul style={{ lineHeight: '1.8' }}>
-              <li>Considere usar una cocinilla o estufa de campamento para cocinar.</li>
-              <li>Si hace fuego, use los anillos o áreas designadas para fogatas.</li>
-              <li>Mantenga las fogatas pequeñas y use solo leña caída y muerta del suelo. Nunca corte árboles vivos.</li>
-            </ul>
-          </div>
-
-          <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ color: '#1e3a5f', marginBottom: '1rem' }}>6. Respete la vida silvestre.</h3>
-            <ul style={{ lineHeight: '1.8' }}>
-              <li>Observe a los animales desde una distancia segura.</li>
-              <li>Nunca alimente a los animales, ya que esto daña su salud y altera su comportamiento natural.</li>
-              <li>Guarde la comida y la basura de manera segura para evitar atraer a la fauna.</li>
-            </ul>
-          </div>
-
-          <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ color: '#1e3a5f', marginBottom: '1rem' }}>7. Sea considerado con otros visitantes.</h3>
-            <ul style={{ lineHeight: '1.8' }}>
-              <li>Ceda el paso en los senderos y sea cortés.</li>
-              <li>Evite el ruido excesivo para permitir que otros disfruten de los sonidos de la naturaleza.</li>
-              <li>Mantenga a sus mascotas bajo control o evite llevarlas si no están permitidas.</li>
-            </ul>
-          </div>
+          <p className="text-center mt-4 fs-5 fw-bold" style={{ color: '#1e3a5f' }}>
+            Protejamos y disfrutemos juntos de nuestro mundo natural.
+          </p>
         </div>
-
-        <p style={{ textAlign: 'center', marginTop: '2rem', fontSize: '1.2rem', fontWeight: 'bold', color: '#1e3a5f' }}>
-          Protejamos y disfrutemos juntos de nuestro mundo natural.
-        </p>
       </section>
 
       {/* Footer */}
-      <footer id="contacto" style={{
-        backgroundColor: '#1e3a5f',
-        color: 'white',
-        padding: '2rem',
-        marginTop: '3rem',
-        textAlign: 'center'
-      }}>
-        <p style={{ margin: 0 }}>© 2025 Nahueltrek - Todos los derechos reservados</p>
+      <footer id="contacto" className="bg-dark text-white text-center py-4 mt-5">
+        <div className="container">
+          <p className="mb-0">© 2025 Nahueltrek - Todos los derechos reservados</p>
+        </div>
       </footer>
 
       {/* Modal de Formulario de Reserva */}
@@ -1242,6 +1259,7 @@ ${formData.mensaje || 'Sin mensaje adicional'}
           actividades={actividades}
           setActividades={setActividades}
           onCerrar={cerrarAdmin}
+          onResetear={resetearActividades}
         />
       )}
     </div>

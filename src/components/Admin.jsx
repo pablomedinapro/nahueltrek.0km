@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import '../App.css'
 
-function Admin({ actividades, setActividades, onCerrar }) {
+function Admin({ actividades, setActividades, onCerrar, onResetear }) {
   const [modoEdicion, setModoEdicion] = useState(null)
   const [actividadForm, setActividadForm] = useState({
     fecha: '',
@@ -127,24 +127,44 @@ function Admin({ actividades, setActividades, onCerrar }) {
           }}>
             🔧 Panel de Administración
           </h2>
-          <button
-            onClick={onCerrar}
-            style={{
-              backgroundColor: '#f44336',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '0.7rem 1.5rem',
-              fontSize: '1rem',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#d32f2f'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#f44336'}
-          >
-            ✕ Cerrar
-          </button>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button
+              onClick={onResetear}
+              style={{
+                backgroundColor: '#ff9800',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '0.7rem 1.5rem',
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#f57c00'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#ff9800'}
+            >
+              🔄 Resetear
+            </button>
+            <button
+              onClick={onCerrar}
+              style={{
+                backgroundColor: '#f44336',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '0.7rem 1.5rem',
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#d32f2f'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#f44336'}
+            >
+              ✕ Cerrar
+            </button>
+          </div>
         </div>
 
         {/* Formulario */}
