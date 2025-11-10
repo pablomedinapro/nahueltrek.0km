@@ -20,6 +20,7 @@ function App() {
   })
   
   const PASSWORD_ADMIN = 'nahueltrek2025' // Cambiar por una contraseña segura
+  const VERSION_ACTIVIDADES = 'v2.0' // Versión del calendario
   
   // Cargar actividades desde localStorage
   const actividadesIniciales = [
@@ -130,13 +131,22 @@ function App() {
   ]
 
   const [actividades, setActividades] = useState(() => {
+    const savedVersion = localStorage.getItem('nahueltrek_version')
     const saved = localStorage.getItem('nahueltrek_actividades')
-    return saved ? JSON.parse(saved) : actividadesIniciales
+    
+    // Si la versión cambió, usar datos iniciales
+    if (savedVersion !== VERSION_ACTIVIDADES || !saved) {
+      localStorage.setItem('nahueltrek_version', VERSION_ACTIVIDADES)
+      return actividadesIniciales
+    }
+    
+    return JSON.parse(saved)
   })
 
   // Guardar actividades en localStorage cuando cambien
   useEffect(() => {
     localStorage.setItem('nahueltrek_actividades', JSON.stringify(actividades))
+    localStorage.setItem('nahueltrek_version', VERSION_ACTIVIDADES)
   }, [actividades])
 
   const formatearFecha = (fecha) => {
