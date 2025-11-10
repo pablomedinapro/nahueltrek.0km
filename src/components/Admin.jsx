@@ -33,6 +33,12 @@ function Admin({ actividades, setActividades, onCerrar, onResetear }) {
 
   const handleImagenFile = (index, file) => {
     if (file) {
+      // Verificar tamaño del archivo (máximo 500KB)
+      if (file.size > 500000) {
+        alert('⚠️ La imagen es muy grande (máx 500KB). Por favor:\n\n1. Sube la imagen a un servicio como Imgur.com\n2. Copia la URL de la imagen\n3. Pégala en el campo de URL\n\nLas imágenes locales tienen limitaciones de almacenamiento.')
+        return
+      }
+
       const reader = new FileReader()
       reader.onloadend = () => {
         const nuevasImagenes = [...actividadForm.imagenes]
@@ -41,6 +47,7 @@ function Admin({ actividades, setActividades, onCerrar, onResetear }) {
           ...prev,
           imagenes: nuevasImagenes
         }))
+        alert('✓ Imagen cargada temporalmente.\n\n⚠️ IMPORTANTE: Para que persista en el servidor, debes:\n1. Subir esta imagen a imgur.com o similar\n2. Reemplazar con la URL permanente')
       }
       reader.readAsDataURL(file)
     }
@@ -239,6 +246,9 @@ function Admin({ actividades, setActividades, onCerrar, onResetear }) {
               <label className="form-label fw-bold mb-3" style={{ color: '#1e3a5f' }}>
                 Imágenes (mínimo 1, máximo 3)
               </label>
+              <div className="alert alert-info" style={{ fontSize: '0.9rem' }}>
+                💡 <strong>Recomendación:</strong> Usa URLs de imágenes permanentes (Imgur, Unsplash, etc.) para mejor rendimiento y persistencia en el servidor.
+              </div>
               {[0, 1, 2].map(index => (
                 <div key={index} className="mb-3 p-3 border rounded-3 bg-white">
                   <label className="form-label fw-semibold" style={{ fontSize: '0.95rem', color: '#555' }}>
@@ -249,12 +259,14 @@ function Admin({ actividades, setActividades, onCerrar, onResetear }) {
                     accept="image/*"
                     onChange={(e) => handleImagenFile(index, e.target.files[0])}
                     className="form-control mb-2"
+                    title="Carga temporal - Usa URL para permanencia"
                   />
+                  <small className="text-muted d-block mb-2">O mejor aún, usa una URL permanente:</small>
                   <input
                     type="url"
                     value={actividadForm.imagenes[index]}
                     onChange={(e) => handleImagenChange(index, e.target.value)}
-                    placeholder={`O ingresa URL de imagen ${index + 1}`}
+                    placeholder={`https://imgur.com/... o URL de imagen ${index + 1}`}
                     className="form-control"
                   />
                   {actividadForm.imagenes[index] && (
