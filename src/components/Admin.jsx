@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import '../App.css'
 
-function Admin({ actividades, setActividades, onCerrar, onResetear }) {
+function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizarImagenes }) {
   const [modoEdicion, setModoEdicion] = useState(null)
+  const [guardando, setGuardando] = useState(false)
   const [actividadForm, setActividadForm] = useState({
     fecha: '',
     titulo: '',
@@ -31,8 +32,10 @@ function Admin({ actividades, setActividades, onCerrar, onResetear }) {
     }))
   }
 
-  const handleImagenFile = (index, file) => {
+  const handleImagenFile = async (index, file) => {
     if (!file) return
+
+    setGuardando(true) // Indicador de carga
 
     // Validaciones
     const maxSize = 2 * 1024 * 1024 // 2MB
@@ -40,37 +43,54 @@ function Admin({ actividades, setActividades, onCerrar, onResetear }) {
     
     // Validar tipo de archivo
     if (!allowedTypes.includes(file.type)) {
+      setGuardando(false)
       alert('❌ Formato no permitido\n\nFormatos aceptados: JPG, JPEG, PNG, WEBP')
       return
     }
 
     // Validar tamaño
     if (file.size > maxSize) {
+      setGuardando(false)
       const sizeMB = (file.size / (1024 * 1024)).toFixed(2)
       alert(`❌ Archivo muy grande (${sizeMB}MB)\n\nTamaño máximo: 2MB\n\nTip: Comprime la imagen en https://tinypng.com`)
       return
     }
 
-    // Convertir a base64 para vista previa y almacenamiento temporal
-    const reader = new FileReader()
-    reader.onloadend = () => {
+    try {
+      const formData = new FormData()
+      formData.append('image', file)
+
+      const response = await fetch('/api/upload-image.php', {
+        method: 'POST',
+        body: formData
+      })
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: `Error ${response.status}` }))
+        throw new Error(error.error || `Error ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      if (!data.success || !data.url) {
+        throw new Error('Respuesta sin URL válida')
+      }
+      
       const nuevasImagenes = [...actividadForm.imagenes]
-      nuevasImagenes[index] = reader.result
+      nuevasImagenes[index] = data.url
+      
       setActividadForm(prev => ({
         ...prev,
         imagenes: nuevasImagenes
       }))
-      
-      // Mensaje de éxito con info
+
+      setGuardando(false)
       const sizeKB = (file.size / 1024).toFixed(0)
-      alert(`✅ Imagen cargada exitosamente\n\nArchivo: ${file.name}\nTamaño: ${sizeKB}KB\nFormato: ${file.type.split('/')[1].toUpperCase()}`)
+      alert(`✅ Imagen ${index + 1} subida\n\n${file.name} (${sizeKB}KB)\n\n${modoEdicion ? '💡 Haz clic en "Guardar Cambios" para aplicar' : '⚠️ Recuerda hacer clic en "Agregar Actividad"'}`)
+    } catch (error) {
+      setGuardando(false)
+      alert(`❌ Error al subir imagen\n\n${error.message}`)
     }
-    
-    reader.onerror = () => {
-      alert('❌ Error al cargar la imagen\n\nIntenta nuevamente o usa una URL')
-    }
-    
-    reader.readAsDataURL(file)
   }
 
   const agregarActividad = () => {
@@ -86,8 +106,30 @@ function Admin({ actividades, setActividades, onCerrar, onResetear }) {
     }
 
     setActividades([...actividades, nuevaActividad])
+    
+    // Actualizar versión de imágenes solo cuando agregamos
+    if (onActualizarImagenes) {
+      onActualizarImagenes()
+    }
+    
     resetForm()
     alert('Actividad agregada exitosamente')
+  }
+
+  const eliminarImagen = (actividadId, imagenIndex) => {
+    if (window.confirm('¿Eliminar esta imagen?')) {
+      const actividadesActualizadas = actividades.map(act => {
+        if (act.id === actividadId) {
+          const nuevasImagenes = act.imagenes.filter((_, idx) => idx !== imagenIndex)
+          return { ...act, imagenes: nuevasImagenes }
+        }
+        return act
+      })
+      setActividades(actividadesActualizadas)
+      if (onActualizarImagenes) {
+        onActualizarImagenes()
+      }
+    }
   }
 
   const editarActividad = (actividad) => {
@@ -98,12 +140,18 @@ function Admin({ actividades, setActividades, onCerrar, onResetear }) {
       descripcion: actividad.descripcion,
       dificultad: actividad.dificultad,
       precio: actividad.precio,
-      imagenes: [...actividad.imagenes, '', ''].slice(0, 3)
+      imagenes: [...actividad.imagenes, '', '', ''].slice(0, 3)
     })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const guardarEdicion = () => {
-    setActividades(actividades.map(act => 
+    if (!actividadForm.titulo || !actividadForm.fecha || !actividadForm.precio) {
+      alert('Por favor completa título, fecha y precio')
+      return
+    }
+
+    const actividadesActualizadas = actividades.map(act => 
       act.id === modoEdicion 
         ? { 
             ...act, 
@@ -111,9 +159,16 @@ function Admin({ actividades, setActividades, onCerrar, onResetear }) {
             imagenes: actividadForm.imagenes.filter(img => img.trim() !== '')
           }
         : act
-    ))
+    )
+    
+    setActividades(actividadesActualizadas)
+    
+    if (onActualizarImagenes) {
+      onActualizarImagenes()
+    }
+    
     resetForm()
-    alert('Actividad actualizada exitosamente')
+    alert('✅ Actividad actualizada exitosamente')
   }
 
   const eliminarActividad = (id) => {
@@ -182,6 +237,13 @@ function Admin({ actividades, setActividades, onCerrar, onResetear }) {
               ✕ Cerrar
             </button>
           </div>
+          
+          {/* Indicador de guardado */}
+          {guardando && (
+            <div className="alert alert-info mt-3" style={{ fontSize: '0.9rem' }}>
+              ⏳ <strong>Guardando imagen...</strong> Por favor espera
+            </div>
+          )}
         </div>
 
         {/* Formulario */}
@@ -189,6 +251,12 @@ function Admin({ actividades, setActividades, onCerrar, onResetear }) {
           <h3 className="mb-4" style={{ color: '#1e3a5f', fontSize: 'clamp(1.2rem, 3vw, 1.5rem)' }}>
             {modoEdicion ? '✏️ Editar Actividad' : '➕ Nueva Actividad'}
           </h3>
+          
+          {modoEdicion && (
+            <div className="alert alert-info mb-3" style={{ fontSize: '0.9rem' }}>
+              <strong>📝 Modo Edición:</strong> ID = {modoEdicion}
+            </div>
+          )}
 
           <div className="row g-3">
             <div className="col-12 col-md-6">
@@ -268,12 +336,13 @@ function Admin({ actividades, setActividades, onCerrar, onResetear }) {
               </label>
               
               {/* Restricciones claramente visibles */}
-              <div className="alert alert-warning mb-3" style={{ fontSize: '0.85rem', padding: '0.75rem' }}>
-                <strong>📋 Restricciones de imágenes:</strong>
+              <div className="alert alert-success mb-3" style={{ fontSize: '0.85rem', padding: '0.75rem' }}>
+                <strong>✅ Las imágenes se suben al servidor automáticamente</strong>
                 <ul className="mb-0 mt-2" style={{ paddingLeft: '1.2rem' }}>
                   <li><strong>Formatos:</strong> JPG, JPEG, PNG, WEBP</li>
                   <li><strong>Tamaño máximo:</strong> 2MB por imagen</li>
-                  <li><strong>Recomendación:</strong> 800x600px o similar</li>
+                  <li><strong>Almacenamiento:</strong> Persistente en el servidor</li>
+                  <li><strong>Visible en:</strong> Todos los dispositivos</li>
                   <li><strong>Tip:</strong> Comprime en <a href="https://tinypng.com" target="_blank" rel="noopener">tinypng.com</a> antes de subir</li>
                 </ul>
               </div>
@@ -286,14 +355,14 @@ function Admin({ actividades, setActividades, onCerrar, onResetear }) {
                   
                   {/* Input de archivo */}
                   <div className="mb-2">
-                    <label className="btn btn-outline-primary btn-sm w-100" style={{ cursor: 'pointer' }}>
+                    <label className="btn btn-primary btn-sm w-100" style={{ cursor: 'pointer' }}>
                       <input
                         type="file"
                         accept="image/jpeg,image/jpg,image/png,image/webp"
                         onChange={(e) => handleImagenFile(index, e.target.files[0])}
                         style={{ display: 'none' }}
                       />
-                      📤 Seleccionar archivo local (máx 2MB)
+                      📤 Subir al servidor (máx 2MB)
                     </label>
                   </div>
                   
@@ -337,7 +406,7 @@ function Admin({ actividades, setActividades, onCerrar, onResetear }) {
               className="btn btn-secondary flex-fill"
               style={{ fontSize: 'clamp(0.9rem, 2vw, 1rem)', padding: 'clamp(0.6rem, 2vw, 0.8rem)' }}
             >
-              🔄 {modoEdicion ? 'Cancelar' : 'Limpiar'}
+              🔄 {modoEdicion ? 'Cancelar Edición' : 'Limpiar'}
             </button>
           </div>
         </div>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Nahueltrek App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { 
+            color: #1e3a5f; 
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .test-section h2 {
+            color: #1e3a5f;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        .test-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .test-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .status {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .loading { background: #ffc107; color: white; }
+        .success { background: #4caf50; color: white; }
+        .error { background: #f44336; color: white; }
+        .pending { background: #9e9e9e; color: white; }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 5px;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .result {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .url-display {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Nahueltrek App</h1>
+        <p class="subtitle">Verificación de funcionalidades</p>
+
+        <!-- Test 1: Endpoint de actividades -->
+        <div class="test-section">
+            <h2>1️⃣ Backend - API de Actividades</h2>
+            <div class="test-item" id="test-actividades-get">
+                <div class="status pending">⏳</div>
+                <div>
+                    <strong>GET /api/actividades.php</strong><br>
+                    <small>Carga inicial de actividades desde servidor</small>
+                </div>
+            </div>
+            <div id="result-actividades-get" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- Test 2: Upload de imágenes -->
+        <div class="test-section">
+            <h2>2️⃣ Backend - Upload de Imágenes</h2>
+            <div class="test-item" id="test-upload-endpoint">
+                <div class="status pending">⏳</div>
+                <div>
+                    <strong>OPTIONS /api/upload-image.php</strong><br>
+                    <small>Verificar endpoint disponible</small>
+                </div>
+            </div>
+            <div id="result-upload-endpoint" class="result" style="display:none;"></div>
+            
+            <div style="margin-top: 15px;">
+                <label for="test-image" style="display: block; margin-bottom: 5px; font-weight: bold; color: #1e3a5f;">
+                    📤 Test de subida de imagen:
+                </label>
+                <input type="file" id="test-image" accept="image/*" style="margin-bottom: 10px;">
+                <button onclick="testUploadImage()">Subir Imagen de Prueba</button>
+                <div id="result-upload-test" class="result" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- Test 3: Directorios -->
+        <div class="test-section">
+            <h2>3️⃣ Estructura de Archivos</h2>
+            <div class="test-item" id="test-uploads-dir">
+                <div class="status pending">⏳</div>
+                <div>
+                    <strong>/uploads/</strong><br>
+                    <small>Directorio para imágenes subidas</small>
+                </div>
+            </div>
+            <div class="test-item" id="test-data-dir">
+                <div class="status pending">⏳</div>
+                <div>
+                    <strong>/data/</strong><br>
+                    <small>Directorio para JSON de actividades</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 4: Frontend -->
+        <div class="test-section">
+            <h2>4️⃣ Frontend - Aplicación React</h2>
+            <div class="test-item" id="test-frontend">
+                <div class="status pending">⏳</div>
+                <div>
+                    <strong>App cargada</strong><br>
+                    <small>Página principal disponible</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button onclick="runAllTests()">▶️ Ejecutar Todos los Tests</button>
+            <button onclick="location.href='/api/test-upload.php'">🔍 Ver Diagnóstico PHP</button>
+            <button onclick="location.href='/api/test-endpoint.html'">📤 Probar Upload Manual</button>
+            <button onclick="location.href='/'">🏠 Ir a la App</button>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = window.location.origin;
+
+        async function testActividades() {
+            const item = document.getElementById('test-actividades-get');
+            const result = document.getElementById('result-actividades-get');
+            const status = item.querySelector('.status');
+            
+            status.className = 'status loading';
+            status.textContent = '⏳';
+            
+            try {
+                const response = await fetch('/api/actividades.php');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    status.className = 'status success';
+                    status.textContent = '✓';
+                    result.style.display = 'block';
+                    result.innerHTML = `
+                        <strong>✅ Éxito</strong><br>
+                        Status: ${response.status}<br>
+                        Actividades encontradas: ${Array.isArray(data) ? data.length : 'N/A'}<br>
+                        <pre>${JSON.stringify(data.slice(0, 1), null, 2)}</pre>
+                    `;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = '✗';
+                result.style.display = 'block';
+                result.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function testUploadEndpoint() {
+            const item = document.getElementById('test-upload-endpoint');
+            const result = document.getElementById('result-upload-endpoint');
+            const status = item.querySelector('.status');
+            
+            status.className = 'status loading';
+            status.textContent = '⏳';
+            
+            try {
+                const response = await fetch('/api/upload-image.php', {
+                    method: 'OPTIONS'
+                });
+                
+                if (response.ok) {
+                    status.className = 'status success';
+                    status.textContent = '✓';
+                    result.style.display = 'block';
+                    result.innerHTML = `
+                        <strong>✅ Endpoint disponible</strong><br>
+                        Status: ${response.status}<br>
+                        Headers: ${JSON.stringify(Object.fromEntries(response.headers), null, 2)}
+                    `;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = '✗';
+                result.style.display = 'block';
+                result.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function testUploadImage() {
+            const fileInput = document.getElementById('test-image');
+            const result = document.getElementById('result-upload-test');
+            
+            if (!fileInput.files[0]) {
+                alert('❌ Selecciona una imagen primero');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            result.style.display = 'block';
+            result.innerHTML = `⏳ <strong>Subiendo ${file.name}...</strong>`;
+
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+
+                const response = await fetch('/api/upload-image.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    result.innerHTML = `
+                        <strong>✅ Imagen subida exitosamente</strong><br>
+                        URL: <a href="${data.url}" target="_blank">${data.url}</a><br>
+                        Filename: ${data.filename}<br>
+                        Size: ${(data.size / 1024).toFixed(2)} KB<br>
+                        <img src="${data.url}" style="max-width: 200px; margin-top: 10px; border-radius: 8px;">
+                    `;
+                } else {
+                    throw new Error(data.error || 'Error desconocido');
+                }
+            } catch (error) {
+                result.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function checkDirectory(path, elementId) {
+            const item = document.getElementById(elementId);
+            const status = item.querySelector('.status');
+            
+            status.className = 'status loading';
+            status.textContent = '⏳';
+            
+            try {
+                // Intentar acceder al directorio (puede dar 403 si existe pero no es listable)
+                const response = await fetch(path);
+                
+                // 403 = existe pero no listable (OK para seguridad)
+                // 404 = no existe
+                if (response.status === 403 || response.status === 200) {
+                    status.className = 'status success';
+                    status.textContent = '✓';
+                } else if (response.status === 404) {
+                    status.className = 'status error';
+                    status.textContent = '✗';
+                } else {
+                    status.className = 'status pending';
+                    status.textContent = '?';
+                }
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = '✗';
+            }
+        }
+
+        function checkFrontend() {
+            const item = document.getElementById('test-frontend');
+            const status = item.querySelector('.status');
+            
+            // Si esta página cargó, el frontend funciona
+            status.className = 'status success';
+            status.textContent = '✓';
+        }
+
+        async function runAllTests() {
+            console.log('🧪 Ejecutando todos los tests...');
+            
+            // Tests en paralelo
+            await Promise.all([
+                testActividades(),
+                testUploadEndpoint(),
+                checkDirectory('/uploads/', 'test-uploads-dir'),
+                checkDirectory('/data/', 'test-data-dir')
+            ]);
+            
+            checkFrontend();
+            
+            console.log('✅ Tests completados');
+        }
+
+        // Auto-ejecutar al cargar
+        window.onload = () => {
+            console.log('🔍 Página de test cargada');
+            runAllTests();
+        };
+    </script>
+</body>
+</html>

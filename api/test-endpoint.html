@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Upload Endpoint</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .result { margin-top: 20px; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Upload Endpoint</h1>
+    
+    <h3>1. Verificar endpoint existe:</h3>
+    <button onclick="testEndpoint()">Test /api/upload-image.php</button>
+    <div id="endpointResult"></div>
+
+    <h3>2. Subir imagen de prueba:</h3>
+    <input type="file" id="fileInput" accept="image/*">
+    <button onclick="uploadTest()">Subir Imagen</button>
+    <div id="uploadResult"></div>
+
+    <script>
+        async function testEndpoint() {
+            const result = document.getElementById('endpointResult');
+            result.innerHTML = '<p>⏳ Verificando endpoint...</p>';
+            
+            try {
+                const response = await fetch('/api/upload-image.php', {
+                    method: 'OPTIONS'
+                });
+                
+                const resultHtml = `
+                    <div class="result ${response.ok ? 'success' : 'error'}">
+                        <h4>${response.ok ? '✅ Endpoint encontrado' : '❌ Endpoint no encontrado'}</h4>
+                        <p><strong>Status:</strong> ${response.status} ${response.statusText}</p>
+                        <p><strong>URL:</strong> ${response.url}</p>
+                        <p><strong>Headers:</strong></p>
+                        <pre>${JSON.stringify(Object.fromEntries(response.headers), null, 2)}</pre>
+                    </div>
+                `;
+                result.innerHTML = resultHtml;
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="result error">
+                        <h4>❌ Error</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function uploadTest() {
+            const fileInput = document.getElementById('fileInput');
+            const result = document.getElementById('uploadResult');
+            
+            if (!fileInput.files[0]) {
+                alert('Selecciona una imagen primero');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            result.innerHTML = `<p>⏳ Subiendo ${file.name} (${(file.size/1024).toFixed(2)}KB)...</p>`;
+
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+
+                console.log('📤 Enviando archivo:', file.name, file.type, file.size);
+
+                const response = await fetch('/api/upload-image.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                console.log('📥 Respuesta:', response.status, response.statusText);
+
+                const text = await response.text();
+                console.log('📄 Texto respuesta:', text);
+
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    throw new Error(`Respuesta no es JSON válido: ${text}`);
+                }
+
+                if (response.ok && data.success) {
+                    result.innerHTML = `
+                        <div class="result success">
+                            <h4>✅ Imagen subida exitosamente</h4>
+                            <p><strong>URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a></p>
+                            <p><strong>Filename:</strong> ${data.filename}</p>
+                            <p><strong>Size:</strong> ${(data.size/1024).toFixed(2)}KB</p>
+                            <img src="${data.url}" style="max-width: 300px; margin-top: 10px; border-radius: 8px;">
+                        </div>
+                    `;
+                } else {
+                    throw new Error(data.error || 'Error desconocido');
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                result.innerHTML = `
+                    <div class="result error">
+                        <h4>❌ Error al subir</h4>
+                        <p>${error.message}</p>
+                        <p><strong>Verifica:</strong></p>
+                        <ul>
+                            <li>Que el archivo api/upload-image.php exista en el servidor</li>
+                            <li>Que la carpeta uploads/ exista y tenga permisos de escritura (755 o 777)</li>
+                            <li>Que PHP tenga file_uploads = On</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-test al cargar
+        window.onload = () => {
+            console.log('🔍 Página de prueba cargada');
+            console.log('URL actual:', window.location.href);
+        };
+    </script>
+</body>
+</html>

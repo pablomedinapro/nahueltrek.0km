@@ -17,6 +17,7 @@ function App() {
   const [formularioAbierto, setFormularioAbierto] = useState(false)
   const [actividadSeleccionada, setActividadSeleccionada] = useState(null)
   const [carruselIndex, setCarruselIndex] = useState({})
+  const [imagenesVersion, setImagenesVersion] = useState(0) // Para forzar recarga de imágenes
   const [adminAbierto, setAdminAbierto] = useState(false)
   const [autenticado, setAutenticado] = useState(false)
   const [mostrarLogin, setMostrarLogin] = useState(false)
@@ -25,6 +26,7 @@ function App() {
     nombre: '',
     email: '',
     telefono: '',
+    cantidadPersonas: '1',
     mensaje: ''
   })
   
@@ -219,24 +221,70 @@ function App() {
     }
   ]
 
-  const [actividades, setActividades] = useState(() => {
-    const savedVersion = localStorage.getItem('nahueltrek_version')
-    const saved = localStorage.getItem('nahueltrek_actividades')
-    
-    // Si la versión cambió, usar datos iniciales
-    if (savedVersion !== VERSION_ACTIVIDADES || !saved) {
-      localStorage.setItem('nahueltrek_version', VERSION_ACTIVIDADES)
-      return actividadesIniciales
+  const [actividades, setActividades] = useState(actividadesIniciales)
+  const [cargando, setCargando] = useState(true)
+
+  // Cargar actividades desde el servidor al iniciar
+  useEffect(() => {
+    const cargarActividades = async () => {
+      try {
+        const response = await fetch('/api/actividades.php')
+        if (response.ok) {
+          const data = await response.json()
+          if (data && data.length > 0) {
+            console.log('✅ Actividades cargadas desde servidor:', data.length)
+            setActividades(data)
+          } else {
+            console.log('ℹ️ Servidor vacío, usando datos iniciales')
+            // Si el servidor está vacío, guardar los datos iniciales
+            await guardarEnServidor(actividadesIniciales)
+          }
+        } else {
+          console.log('⚠️ Error al cargar desde servidor, usando datos iniciales')
+        }
+      } catch (error) {
+        console.error('❌ Error de conexión:', error)
+        console.log('ℹ️ Usando datos iniciales')
+      } finally {
+        setCargando(false)
+      }
     }
     
-    return JSON.parse(saved)
-  })
+    cargarActividades()
+  }, [])
 
-  // Guardar actividades en localStorage cuando cambien
+  // Función para guardar en el servidor
+  const guardarEnServidor = async (nuevasActividades) => {
+    try {
+      const response = await fetch('/api/actividades.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(nuevasActividades)
+      })
+      
+      if (response.ok) {
+        const result = await response.json()
+        console.log('✅ Guardado en servidor:', result)
+        return true
+      } else {
+        console.error('❌ Error al guardar en servidor')
+        return false
+      }
+    } catch (error) {
+      console.error('❌ Error de conexión al guardar:', error)
+      return false
+    }
+  }
+
+  // Guardar actividades en el servidor cuando cambien
   useEffect(() => {
-    localStorage.setItem('nahueltrek_actividades', JSON.stringify(actividades))
-    localStorage.setItem('nahueltrek_version', VERSION_ACTIVIDADES)
-  }, [actividades])
+    if (!cargando && actividades.length > 0) {
+      console.log('💾 useEffect detectó cambio en actividades, guardando...', actividades.length)
+      guardarEnServidor(actividades)
+    }
+  }, [actividades, cargando])
 
   const formatearFecha = (fecha) => {
     const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
@@ -288,10 +336,10 @@ function App() {
     setAdminAbierto(false)
   }
 
-  const resetearActividades = () => {
+  const resetearActividades = async () => {
     if (confirm('¿Estás seguro de resetear las actividades a las predeterminadas?')) {
-      localStorage.removeItem('nahueltrek_actividades')
       setActividades(actividadesIniciales)
+      await guardarEnServidor(actividadesIniciales)
       alert('Actividades reseteadas exitosamente')
     }
   }
@@ -327,7 +375,7 @@ function App() {
   const cerrarFormulario = () => {
     setFormularioAbierto(false)
     setActividadSeleccionada(null)
-    setFormData({ nombre: '', email: '', telefono: '', mensaje: '' })
+    setFormData({ nombre: '', email: '', telefono: '', cantidadPersonas: '1', mensaje: '' })
   }
 
   const handleInputChange = (e) => {
@@ -355,6 +403,7 @@ Precio: ${actividadSeleccionada.precio}
 Nombre: ${formData.nombre}
 Email: ${formData.email}
 Teléfono: ${formData.telefono}
+Cantidad de Personas: ${formData.cantidadPersonas}
 
 Mensaje:
 ${formData.mensaje || 'Sin mensaje adicional'}
@@ -374,6 +423,42 @@ ${formData.mensaje || 'Sin mensaje adicional'}
 
   return (
     <div className="App" style={{ margin: 0, padding: 0, backgroundColor: '#f8f9fa' }}>
+      {/* Indicador de carga */}
+      {cargando && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999
+        }}>
+          <div style={{
+            textAlign: 'center',
+            color: 'white',
+            padding: '2rem',
+            borderRadius: '15px',
+            background: 'linear-gradient(135deg, #1e3a5f 0%, #2c5f8d 100%)',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.5)'
+          }}>
+            <div style={{
+              width: '60px',
+              height: '60px',
+              border: '4px solid rgba(255,255,255,0.3)',
+              borderTop: '4px solid white',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 1rem'
+            }}></div>
+            <h3>Cargando actividades...</h3>
+          </div>
+        </div>
+      )}
+      
       <nav className="gradient-bg sticky-top" style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -729,7 +814,8 @@ ${formData.mensaje || 'Sin mensaje adicional'}
                   backgroundColor: '#f0f0f0'
                 }}>
                   <img 
-                    src={actividad.imagenes[currentImageIndex]}
+                    key={`${actividad.id}-${currentImageIndex}-${imagenesVersion}`}
+                    src={`${actividad.imagenes[currentImageIndex]}${actividad.imagenes[currentImageIndex]?.includes('/uploads/') ? '?v=' + imagenesVersion : ''}`}
                     alt={actividad.titulo}
                     style={{
                       width: '100%',
@@ -1281,6 +1367,36 @@ ${formData.mensaje || 'Sin mensaje adicional'}
                     fontWeight: 'bold',
                     fontSize: 'clamp(0.9rem, 2vw, 1rem)'
                   }}>
+                    Cantidad de Personas *
+                  </label>
+                  <input
+                    type="number"
+                    name="cantidadPersonas"
+                    value={formData.cantidadPersonas}
+                    onChange={handleInputChange}
+                    required
+                    min="1"
+                    max="50"
+                    style={{
+                      width: '100%',
+                      padding: '0.8rem',
+                      border: '2px solid #e0e0e0',
+                      borderRadius: '6px',
+                      fontSize: 'clamp(0.9rem, 2vw, 1rem)',
+                      boxSizing: 'border-box'
+                    }}
+                    placeholder="Número de personas"
+                  />
+                </div>
+
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <label style={{ 
+                    display: 'block', 
+                    marginBottom: '0.5rem', 
+                    color: '#1e3a5f',
+                    fontWeight: 'bold',
+                    fontSize: 'clamp(0.9rem, 2vw, 1rem)'
+                  }}>
                     Mensaje (opcional)
                   </label>
                   <textarea
@@ -1445,6 +1561,11 @@ ${formData.mensaje || 'Sin mensaje adicional'}
           setActividades={setActividades}
           onCerrar={cerrarAdmin}
           onResetear={resetearActividades}
+          onActualizarImagenes={() => {
+            // Solo incrementar versión cuando se guarden los cambios finales
+            setImagenesVersion(prev => prev + 1)
+            setCarruselIndex({})
+          }}
         />
       )}
     </div>
