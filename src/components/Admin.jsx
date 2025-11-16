@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import '../App.css'
 
-function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizarImagenes }) {
+function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizarImagenes, lugares }) {
   const [modoEdicion, setModoEdicion] = useState(null)
   const [guardando, setGuardando] = useState(false)
   const [actividadForm, setActividadForm] = useState({
@@ -10,7 +10,8 @@ function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizar
     descripcion: '',
     dificultad: 'Medio',
     precio: '',
-    imagenes: ['', '', '']
+    lugarId: null,
+    imagen: ''
   })
 
   const dificultades = ['Bajo', 'Medio', 'Medio - Alto', 'Alto']
@@ -23,16 +24,14 @@ function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizar
     }))
   }
 
-  const handleImagenChange = (index, value) => {
-    const nuevasImagenes = [...actividadForm.imagenes]
-    nuevasImagenes[index] = value
+  const handleImagenChange = (value) => {
     setActividadForm(prev => ({
       ...prev,
-      imagenes: nuevasImagenes
+      imagen: value
     }))
   }
 
-  const handleImagenFile = async (index, file) => {
+  const handleImagenFile = async (file) => {
     if (!file) return
 
     setGuardando(true) // Indicador de carga
@@ -76,17 +75,14 @@ function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizar
         throw new Error('Respuesta sin URL válida')
       }
       
-      const nuevasImagenes = [...actividadForm.imagenes]
-      nuevasImagenes[index] = data.url
-      
       setActividadForm(prev => ({
         ...prev,
-        imagenes: nuevasImagenes
+        imagen: data.url
       }))
 
       setGuardando(false)
       const sizeKB = (file.size / 1024).toFixed(0)
-      alert(`✅ Imagen ${index + 1} subida\n\n${file.name} (${sizeKB}KB)\n\n${modoEdicion ? '💡 Haz clic en "Guardar Cambios" para aplicar' : '⚠️ Recuerda hacer clic en "Agregar Actividad"'}`)
+      alert(`✅ Imagen subida\n\n${file.name} (${sizeKB}KB)\n\n${modoEdicion ? '💡 Haz clic en "Guardar Cambios" para aplicar' : '⚠️ Recuerda hacer clic en "Agregar Actividad"'}`)
     } catch (error) {
       setGuardando(false)
       alert(`❌ Error al subir imagen\n\n${error.message}`)
@@ -101,8 +97,7 @@ function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizar
 
     const nuevaActividad = {
       id: Date.now(),
-      ...actividadForm,
-      imagenes: actividadForm.imagenes.filter(img => img.trim() !== '')
+      ...actividadForm
     }
 
     setActividades([...actividades, nuevaActividad])
@@ -116,22 +111,6 @@ function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizar
     alert('Actividad agregada exitosamente')
   }
 
-  const eliminarImagen = (actividadId, imagenIndex) => {
-    if (window.confirm('¿Eliminar esta imagen?')) {
-      const actividadesActualizadas = actividades.map(act => {
-        if (act.id === actividadId) {
-          const nuevasImagenes = act.imagenes.filter((_, idx) => idx !== imagenIndex)
-          return { ...act, imagenes: nuevasImagenes }
-        }
-        return act
-      })
-      setActividades(actividadesActualizadas)
-      if (onActualizarImagenes) {
-        onActualizarImagenes()
-      }
-    }
-  }
-
   const editarActividad = (actividad) => {
     setModoEdicion(actividad.id)
     setActividadForm({
@@ -140,7 +119,8 @@ function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizar
       descripcion: actividad.descripcion,
       dificultad: actividad.dificultad,
       precio: actividad.precio,
-      imagenes: [...actividad.imagenes, '', '', ''].slice(0, 3)
+      lugarId: actividad.lugarId || null,
+      imagen: actividad.imagen || actividad.imagenes?.[0] || ''
     })
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -155,8 +135,7 @@ function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizar
       act.id === modoEdicion 
         ? { 
             ...act, 
-            ...actividadForm,
-            imagenes: actividadForm.imagenes.filter(img => img.trim() !== '')
+            ...actividadForm
           }
         : act
     )
@@ -185,7 +164,8 @@ function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizar
       descripcion: '',
       dificultad: 'Medio',
       precio: '',
-      imagenes: ['', '', '']
+      lugarId: null,
+      imagen: ''
     })
   }
 
@@ -331,65 +311,87 @@ function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizar
             </div>
 
             <div className="col-12">
+              <label className="form-label fw-bold" style={{ color: '#1e3a5f' }}>
+                📍 Lugar/Destino {lugares && lugares.length > 0 && '(opcional)'}
+              </label>
+              {lugares && lugares.length > 0 ? (
+                <select
+                  name="lugarId"
+                  value={actividadForm.lugarId || ''}
+                  onChange={(e) => setActividadForm(prev => ({
+                    ...prev,
+                    lugarId: e.target.value ? parseInt(e.target.value) : null
+                  }))}
+                  className="form-select"
+                >
+                  <option value="">Sin lugar asignado</option>
+                  {lugares.map(lugar => (
+                    <option key={lugar.id} value={lugar.id}>
+                      {lugar.titulo} - {lugar.categoria}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className="alert alert-warning mb-0" style={{ fontSize: '0.9rem' }}>
+                  ⚠️ No hay lugares disponibles. <a href="#" onClick={(e) => { e.preventDefault(); alert('Abre el Blog de Lugares para crear lugares primero') }}>Crear lugares primero</a>
+                </div>
+              )}
+            </div>
+
+            <div className="col-12">
               <label className="form-label fw-bold mb-2" style={{ color: '#1e3a5f' }}>
-                📷 Imágenes (mínimo 1, máximo 3)
+                📷 Imagen
               </label>
               
               {/* Restricciones claramente visibles */}
               <div className="alert alert-success mb-3" style={{ fontSize: '0.85rem', padding: '0.75rem' }}>
-                <strong>✅ Las imágenes se suben al servidor automáticamente</strong>
+                <strong>✅ La imagen se sube al servidor automáticamente</strong>
                 <ul className="mb-0 mt-2" style={{ paddingLeft: '1.2rem' }}>
                   <li><strong>Formatos:</strong> JPG, JPEG, PNG, WEBP</li>
-                  <li><strong>Tamaño máximo:</strong> 2MB por imagen</li>
+                  <li><strong>Tamaño máximo:</strong> 2MB</li>
                   <li><strong>Almacenamiento:</strong> Persistente en el servidor</li>
                   <li><strong>Visible en:</strong> Todos los dispositivos</li>
                   <li><strong>Tip:</strong> Comprime en <a href="https://tinypng.com" target="_blank" rel="noopener">tinypng.com</a> antes de subir</li>
                 </ul>
               </div>
 
-              {[0, 1, 2].map(index => (
-                <div key={index} className="mb-3 p-3 border rounded-3" style={{ backgroundColor: '#f8f9fa' }}>
-                  <label className="form-label fw-semibold mb-2" style={{ fontSize: '0.95rem', color: '#1e3a5f' }}>
-                    �️ Imagen {index + 1} {index === 0 && <span className="badge bg-danger ms-2">Requerida</span>}
+              <div className="mb-3 p-3 border rounded-3" style={{ backgroundColor: '#f8f9fa' }}>
+                {/* Input de archivo */}
+                <div className="mb-2">
+                  <label className="btn btn-primary btn-sm w-100" style={{ cursor: 'pointer' }}>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      onChange={(e) => handleImagenFile(e.target.files[0])}
+                      style={{ display: 'none' }}
+                    />
+                    📤 Subir al servidor (máx 2MB)
                   </label>
-                  
-                  {/* Input de archivo */}
-                  <div className="mb-2">
-                    <label className="btn btn-primary btn-sm w-100" style={{ cursor: 'pointer' }}>
-                      <input
-                        type="file"
-                        accept="image/jpeg,image/jpg,image/png,image/webp"
-                        onChange={(e) => handleImagenFile(index, e.target.files[0])}
-                        style={{ display: 'none' }}
-                      />
-                      📤 Subir al servidor (máx 2MB)
-                    </label>
-                  </div>
-                  
-                  {/* Separador */}
-                  <div className="text-center text-muted my-2" style={{ fontSize: '0.85rem' }}>
-                    — o —
-                  </div>
-                  
-                  {/* Input de URL */}
-                  <input
-                    type="url"
-                    value={actividadForm.imagenes[index]}
-                    onChange={(e) => handleImagenChange(index, e.target.value)}
-                    placeholder="https://ejemplo.com/imagen.jpg"
-                    className="form-control"
-                  />
-                  {actividadForm.imagenes[index] && (
-                    <div className="mt-2">
-                      <img
-                        src={actividadForm.imagenes[index]}
-                        alt={`Preview ${index + 1}`}
-                        style={{ maxWidth: '120px', height: 'auto', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
-                      />
-                    </div>
-                  )}
                 </div>
-              ))}
+                
+                {/* Separador */}
+                <div className="text-center text-muted my-2" style={{ fontSize: '0.85rem' }}>
+                  — o —
+                </div>
+                
+                {/* Input de URL */}
+                <input
+                  type="url"
+                  value={actividadForm.imagen}
+                  onChange={(e) => handleImagenChange(e.target.value)}
+                  placeholder="https://ejemplo.com/imagen.jpg"
+                  className="form-control"
+                />
+                {actividadForm.imagen && (
+                  <div className="mt-3">
+                    <img
+                      src={actividadForm.imagen}
+                      alt="Preview"
+                      style={{ maxWidth: '200px', width: '100%', height: 'auto', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -422,7 +424,7 @@ function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizar
               <div key={actividad.id} className="col">
                 <div className="card h-100 shadow-sm" style={{ borderRadius: '12px', border: '2px solid #e0e0e0', overflow: 'hidden' }}>
                   <img
-                    src={actividad.imagenes[0]}
+                    src={actividad.imagen || actividad.imagenes?.[0] || 'https://via.placeholder.com/400x180?text=Sin+Imagen'}
                     alt={actividad.titulo}
                     className="card-img-top"
                     style={{ height: '180px', objectFit: 'cover' }}
@@ -437,6 +439,14 @@ function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizar
                     <p className="card-text mb-2" style={{ fontSize: '0.9rem' }}>
                       <strong>📍 Descripción:</strong> {actividad.descripcion}
                     </p>
+                    {actividad.lugarId && lugares && (
+                      <p className="card-text mb-2" style={{ fontSize: '0.9rem' }}>
+                        <strong>🗺️ Lugar:</strong> {' '}
+                        <span className="badge bg-info text-dark">
+                          {lugares.find(l => l.id === actividad.lugarId)?.titulo || 'Desconocido'}
+                        </span>
+                      </p>
+                    )}
                     <p className="card-text mb-2" style={{ fontSize: '0.9rem' }}>
                       <strong>🏔️ Dificultad:</strong> {' '}
                       <span className={`badge bg-${

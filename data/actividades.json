@@ -1,29 +1,17 @@
 [
     {
-        "id": 101,
-        "fecha": "2025-11-15",
-        "titulo": "Trekking PN Nahuelbuta",
-        "descripcion": "Sendero Coihue - 9 km (ida-vuelta)",
-        "dificultad": "Medio",
-        "precio": "$42,000",
-        "imagenes": [
-            "http:\/\/localhost:8000\/uploads\/nahueltrek_6918f4b70abaf4.23823791.jpg",
-            "http:\/\/localhost:8000\/uploads\/nahueltrek_6918f4dcae23c6.80582354.jpg",
-            "http:\/\/localhost:8000\/uploads\/nahueltrek_6918f4a9be4156.94356375.jfif"
-        ]
-    },
-    {
         "id": 102,
         "fecha": "2025-11-16",
-        "titulo": "Trekking Salto del Indio",
-        "descripcion": "Cascada + Bosque Nativo - 7 km",
+        "titulo": "Trekking Travesia en Nahuelbuta",
+        "descripcion": "Trekking por Bosque Nativo - 12 km",
         "dificultad": "Bajo",
         "precio": "$38,000",
         "imagenes": [
-            "https:\/\/images.unsplash.com\/photo-1501594907352-04cda38ebc29?w=800",
-            "https:\/\/images.unsplash.com\/photo-1469474968028-56623f02e42e?w=800",
-            "https:\/\/images.unsplash.com\/photo-1470071459604-3b5ec3a7fe05?w=800"
-        ]
+            "http:\/\/localhost:8000\/uploads\/nahueltrek_6919cb3e7847a0.05434584.jpg",
+            "http:\/\/localhost:8000\/uploads\/nahueltrek_6919caf125ec53.49767139.jpg",
+            "http:\/\/localhost:8000\/uploads\/nahueltrek_6919caf5b34854.40647044.jfif"
+        ],
+        "lugarId": 1763297950743
     },
     {
         "id": 103,

@@ -2,6 +2,7 @@ import './App.css'
 import logo from './assets/logo.png'
 import { useState, useEffect } from 'react'
 import Admin from './components/Admin'
+import BlogLugares from './components/BlogLugares'
 
 // Importar imágenes NDR
 import ndr1 from '../img/025ebb3e-a026-4ff8-b944-4460656eb26e.jfif'
@@ -19,9 +20,12 @@ function App() {
   const [carruselIndex, setCarruselIndex] = useState({})
   const [imagenesVersion, setImagenesVersion] = useState(0) // Para forzar recarga de imágenes
   const [adminAbierto, setAdminAbierto] = useState(false)
+  const [blogAbierto, setBlogAbierto] = useState(false)
   const [autenticado, setAutenticado] = useState(false)
   const [mostrarLogin, setMostrarLogin] = useState(false)
   const [passwordInput, setPasswordInput] = useState('')
+  const [lugares, setLugares] = useState([])
+  const [cargandoLugares, setCargandoLugares] = useState(true)
   const [formData, setFormData] = useState({
     nombre: '',
     email: '',
@@ -253,6 +257,26 @@ function App() {
     cargarActividades()
   }, [])
 
+  // Cargar lugares desde el servidor al iniciar
+  useEffect(() => {
+    const cargarLugares = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/lugares.php')
+        if (response.ok) {
+          const data = await response.json()
+          console.log('✅ Lugares cargados desde servidor:', data.length)
+          setLugares(data || [])
+        }
+      } catch (error) {
+        console.error('❌ Error al cargar lugares:', error)
+      } finally {
+        setCargandoLugares(false)
+      }
+    }
+    
+    cargarLugares()
+  }, [])
+
   // Función para guardar en el servidor
   const guardarEnServidor = async (nuevasActividades) => {
     try {
@@ -331,9 +355,14 @@ function App() {
     setAdminAbierto(false)
   }
 
+  const cerrarBlog = () => {
+    setBlogAbierto(false)
+  }
+
   const cerrarSesion = () => {
     setAutenticado(false)
     setAdminAbierto(false)
+    setBlogAbierto(false)
   }
 
   const resetearActividades = async () => {
@@ -494,9 +523,33 @@ ${formData.mensaje || 'Sin mensaje adicional'}
           }}>
             <li><a href="#inicio" style={{ color: 'white', textDecoration: 'none', transition: 'opacity 0.3s' }}>Inicio</a></li>
             <li><a href="#actividades" style={{ color: 'white', textDecoration: 'none', transition: 'opacity 0.3s' }}>Actividades</a></li>
+            <li><a href="#lugares" style={{ color: 'white', textDecoration: 'none', transition: 'opacity 0.3s' }}>Lugares</a></li>
             <li><a href="#ndr" style={{ color: 'white', textDecoration: 'none', transition: 'opacity 0.3s' }}>NDR</a></li>
             <li><a href="#contacto" style={{ color: 'white', textDecoration: 'none', transition: 'opacity 0.3s' }}>Contacto</a></li>
           </ul>
+
+          {/* Botón Blog */}
+          {autenticado && (
+            <button
+              onClick={() => setBlogAbierto(true)}
+              style={{
+                padding: '0.6rem 1.2rem',
+                background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)',
+                color: 'white',
+                border: '2px solid rgba(255,255,255,0.3)',
+                borderRadius: '8px',
+                fontSize: '0.9rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                backdropFilter: 'blur(10px)',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+              onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+            >
+              📍 Blog Lugares
+            </button>
+          )}
 
           {/* Botón Admin */}
           <button
@@ -703,6 +756,25 @@ ${formData.mensaje || 'Sin mensaje adicional'}
           </li>
           <li>
             <a 
+              href="#lugares" 
+              onClick={() => setMenuAbierto(false)}
+              style={{ 
+                color: 'white', 
+                textDecoration: 'none', 
+                fontSize: '1.2rem',
+                display: 'block',
+                padding: '0.5rem',
+                borderLeft: '3px solid transparent',
+                transition: 'all 0.3s'
+              }}
+              onMouseOver={(e) => e.target.style.borderLeft = '3px solid #81c784'}
+              onMouseOut={(e) => e.target.style.borderLeft = '3px solid transparent'}
+            >
+              Lugares
+            </a>
+          </li>
+          <li>
+            <a 
               href="#ndr" 
               onClick={() => setMenuAbierto(false)}
               style={{ 
@@ -791,10 +863,7 @@ ${formData.mensaje || 'Sin mensaje adicional'}
               </h3>
               
               <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                {grupo.actividades.map((actividad) => {
-              const currentImageIndex = carruselIndex[actividad.id] || 0
-              
-              return (
+                {grupo.actividades.map((actividad) => (
                 <div key={actividad.id} className="col">
                   <div 
                     className="card h-100 card-hover"
@@ -805,7 +874,7 @@ ${formData.mensaje || 'Sin mensaje adicional'}
                       border: '1px solid rgba(0,0,0,0.05)'
                     }}
                   >
-                {/* Carrusel de imágenes */}
+                {/* Imagen de la actividad */}
                 <div style={{
                   position: 'relative',
                   width: '100%',
@@ -814,8 +883,8 @@ ${formData.mensaje || 'Sin mensaje adicional'}
                   backgroundColor: '#f0f0f0'
                 }}>
                   <img 
-                    key={`${actividad.id}-${currentImageIndex}-${imagenesVersion}`}
-                    src={`${actividad.imagenes[currentImageIndex]}${actividad.imagenes[currentImageIndex]?.includes('/uploads/') ? '?v=' + imagenesVersion : ''}`}
+                    key={`${actividad.id}-${imagenesVersion}`}
+                    src={`${actividad.imagen || actividad.imagenes?.[0] || 'https://via.placeholder.com/400x250?text=Sin+Imagen'}${(actividad.imagen || actividad.imagenes?.[0] || '').includes('/uploads/') ? '?v=' + imagenesVersion : ''}`}
                     alt={actividad.titulo}
                     style={{
                       width: '100%',
@@ -824,91 +893,6 @@ ${formData.mensaje || 'Sin mensaje adicional'}
                       transition: 'transform 0.3s ease'
                     }}
                   />
-                  
-                  {/* Controles del carrusel */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      anteriorImagen(actividad.id, actividad.imagenes.length)
-                    }}
-                    style={{
-                      position: 'absolute',
-                      left: '10px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      backgroundColor: 'rgba(0,0,0,0.5)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '40px',
-                      height: '40px',
-                      cursor: 'pointer',
-                      fontSize: '1.5rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backdropFilter: 'blur(4px)',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(0,0,0,0.7)'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = 'rgba(0,0,0,0.5)'}
-                  >
-                    ‹
-                  </button>
-                  
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      siguienteImagen(actividad.id, actividad.imagenes.length)
-                    }}
-                    style={{
-                      position: 'absolute',
-                      right: '10px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      backgroundColor: 'rgba(0,0,0,0.5)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '40px',
-                      height: '40px',
-                      cursor: 'pointer',
-                      fontSize: '1.5rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backdropFilter: 'blur(4px)',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(0,0,0,0.7)'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = 'rgba(0,0,0,0.5)'}
-                  >
-                    ›
-                  </button>
-
-                  {/* Indicadores de imagen */}
-                  <div style={{
-                    position: 'absolute',
-                    bottom: '10px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    display: 'flex',
-                    gap: '6px'
-                  }}>
-                    {actividad.imagenes.map((_, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          width: '8px',
-                          height: '8px',
-                          borderRadius: '50%',
-                          backgroundColor: index === currentImageIndex ? 'white' : 'rgba(255,255,255,0.5)',
-                          transition: 'all 0.3s ease',
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
-                        }}
-                      />
-                    ))}
-                  </div>
                   
                   {/* Badge de fecha flotante */}
                   <div style={{
@@ -940,12 +924,26 @@ ${formData.mensaje || 'Sin mensaje adicional'}
                   
                   <p style={{ 
                     color: '#666', 
-                    marginBottom: '1rem',
+                    marginBottom: '0.5rem',
                     lineHeight: '1.6',
                     fontSize: '0.95rem'
                   }}>
                     📍 {actividad.descripcion}
                   </p>
+
+                  {actividad.lugarId && lugares.length > 0 && (() => {
+                    const lugar = lugares.find(l => l.id === actividad.lugarId)
+                    return lugar ? (
+                      <p style={{ 
+                        color: '#ff6b35', 
+                        marginBottom: '1rem',
+                        fontSize: '0.85rem',
+                        fontWeight: '600'
+                      }}>
+                        🗺️ {lugar.titulo}
+                      </p>
+                    ) : null
+                  })()}
                   
                   <div style={{
                     display: 'flex',
@@ -1008,12 +1006,146 @@ ${formData.mensaje || 'Sin mensaje adicional'}
                 </div>
                 </div>
               </div>
-            )
-          })}
+            ))
+          }
           </div>
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Sección de Lugares / Blog */}
+      <section id="lugares" className="container my-5 py-4">
+        <div className="text-center mb-5">
+          <h2 className="display-4 mb-3" style={{ color: '#1e3a5f', fontWeight: 'bold' }}>
+            📍 Lugares que Debes Conocer
+          </h2>
+          <p className="lead text-muted">
+            Descubre los mejores destinos para tus aventuras en la naturaleza
+          </p>
+        </div>
+
+        {lugares.length === 0 ? (
+          <div className="text-center text-muted py-5">
+            <p className="fs-5">No hay lugares publicados aún</p>
+            {autenticado && (
+              <button 
+                className="btn btn-primary mt-3"
+                onClick={() => setBlogAbierto(true)}
+              >
+                📍 Agregar Primer Lugar
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="row g-4">
+            {lugares
+              .sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0))
+              .map((lugar) => (
+                <div key={lugar.id} className="col-md-6 col-lg-4">
+                  <div 
+                    className="card h-100 shadow-sm hover-card"
+                    style={{ 
+                      borderRadius: '12px',
+                      overflow: 'hidden',
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    {lugar.destacado && (
+                      <div 
+                        style={{
+                          position: 'absolute',
+                          top: '10px',
+                          right: '10px',
+                          background: 'linear-gradient(135deg, #ff6b35, #f7931e)',
+                          color: 'white',
+                          padding: '5px 12px',
+                          borderRadius: '20px',
+                          fontSize: '0.85rem',
+                          fontWeight: 'bold',
+                          zIndex: 1,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                        }}
+                      >
+                        ⭐ Destacado
+                      </div>
+                    )}
+                    
+                    {lugar.imagenes[0] && (
+                      <div style={{ position: 'relative', overflow: 'hidden', height: '200px' }}>
+                        <img
+                          src={lugar.imagenes[0]}
+                          alt={lugar.titulo}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            transition: 'transform 0.3s ease'
+                          }}
+                          onMouseOver={(e) => e.target.style.transform = 'scale(1.1)'}
+                          onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                        />
+                      </div>
+                    )}
+                    
+                    <div className="card-body">
+                      <div className="mb-2">
+                        <span 
+                          className="badge"
+                          style={{
+                            background: '#1e3a5f',
+                            color: 'white',
+                            padding: '4px 10px',
+                            borderRadius: '12px',
+                            fontSize: '0.75rem'
+                          }}
+                        >
+                          {lugar.categoria}
+                        </span>
+                      </div>
+                      
+                      <h5 className="card-title mb-2" style={{ color: '#1e3a5f' }}>
+                        {lugar.titulo}
+                      </h5>
+                      
+                      <p className="card-text text-muted" style={{ fontSize: '0.9rem' }}>
+                        {lugar.descripcion}
+                      </p>
+                      
+                      {lugar.ubicacion && (
+                        <p className="text-muted mb-2" style={{ fontSize: '0.85rem' }}>
+                          📍 {lugar.ubicacion}
+                        </p>
+                      )}
+
+                      {/* Mostrar actividades relacionadas */}
+                      {(() => {
+                        const actividadesRelacionadas = actividades.filter(a => a.lugarId === lugar.id)
+                        return actividadesRelacionadas.length > 0 ? (
+                          <div className="mt-2 mb-2">
+                            <small className="text-muted">
+                              🥾 {actividadesRelacionadas.length} {actividadesRelacionadas.length === 1 ? 'actividad' : 'actividades'}
+                            </small>
+                          </div>
+                        ) : null
+                      })()}
+                      
+                      {lugar.contenido && (
+                        <button 
+                          className="btn btn-sm btn-outline-primary mt-2"
+                          onClick={() => {
+                            alert(`${lugar.titulo}\n\n${lugar.contenido}`)
+                          }}
+                        >
+                          Leer más →
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+          </div>
+        )}
       </section>
 
       {/* Sección NDR */}
@@ -1559,12 +1691,25 @@ ${formData.mensaje || 'Sin mensaje adicional'}
         <Admin 
           actividades={actividades}
           setActividades={setActividades}
+          lugares={lugares}
           onCerrar={cerrarAdmin}
           onResetear={resetearActividades}
           onActualizarImagenes={() => {
             // Solo incrementar versión cuando se guarden los cambios finales
             setImagenesVersion(prev => prev + 1)
             setCarruselIndex({})
+          }}
+        />
+      )}
+
+      {/* Panel de Blog de Lugares */}
+      {blogAbierto && autenticado && (
+        <BlogLugares 
+          lugares={lugares}
+          setLugares={setLugares}
+          onCerrar={cerrarBlog}
+          onActualizarImagenes={() => {
+            setImagenesVersion(prev => prev + 1)
           }}
         />
       )}

@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1763297950743,
+        "titulo": "Parque Nacional Nahuelbuta",
+        "descripcion": "Hotspot Bio diersidad",
+        "ubicacion": "Region Araucana",
+        "contenido": "",
+        "categoria": "naturaleza",
+        "destacado": false,
+        "imagenes": [
+            "http:\/\/localhost:8000\/uploads\/nahueltrek_6919cb8db134e5.02351329.jpg",
+            "http:\/\/localhost:8000\/uploads\/nahueltrek_6919cb916cd743.23783877.jpg",
+            "http:\/\/localhost:8000\/uploads\/nahueltrek_6919cb944b61b2.20480756.jfif"
+        ],
+        "fechaPublicacion": "2025-11-16T12:59:10.743Z"
+    }
+]
