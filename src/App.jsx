@@ -229,8 +229,9 @@ function App() {
     }
   ]
 
-  const [actividades, setActividades] = useState(actividadesIniciales)
+  const [actividades, setActividades] = useState([])
   const [cargando, setCargando] = useState(true)
+  const [inicializado, setInicializado] = useState(false)
 
   // Cargar actividades
   useEffect(() => {
@@ -252,6 +253,7 @@ function App() {
         setActividades(actividadesIniciales)
       } finally {
         setCargando(false)
+        setInicializado(true)
       }
       
       // Nota: En producción con Google Sheets, aquí se cargaría desde Sheets
@@ -344,14 +346,14 @@ function App() {
 
   // Guardar actividades
   useEffect(() => {
-    if (!cargando && actividades.length > 0) {
-      console.log('💾 Actividades actualizadas:', actividades.length)
+    if (inicializado && actividades.length > 0) {
+      console.log('💾 Guardando actividades en localStorage:', actividades.length)
       localStorage.setItem('actividades', JSON.stringify(actividades))
       // En producción con Google Sheets:
       // const sheetsService = new SheetsService()
       // await sheetsService.updateActividades(actividades)
     }
-  }, [actividades, cargando])
+  }, [actividades, inicializado])
 
   const formatearFecha = (fecha) => {
     const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
