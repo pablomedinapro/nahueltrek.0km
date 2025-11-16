@@ -235,9 +235,24 @@ function App() {
   // Cargar actividades
   useEffect(() => {
     const cargarActividades = async () => {
-      console.log('✅ Cargando actividades')
-      setActividades(actividadesIniciales)
-      setCargando(false)
+      try {
+        // Intentar cargar desde localStorage primero
+        const actividadesGuardadas = localStorage.getItem('actividades')
+        if (actividadesGuardadas) {
+          console.log('✅ Cargando actividades desde localStorage')
+          const data = JSON.parse(actividadesGuardadas)
+          setActividades(data)
+        } else {
+          console.log('✅ Cargando actividades iniciales')
+          setActividades(actividadesIniciales)
+          localStorage.setItem('actividades', JSON.stringify(actividadesIniciales))
+        }
+      } catch (error) {
+        console.error('❌ Error al cargar actividades:', error)
+        setActividades(actividadesIniciales)
+      } finally {
+        setCargando(false)
+      }
       
       // Nota: En producción con Google Sheets, aquí se cargaría desde Sheets
       // const sheetsService = new SheetsService()
@@ -330,7 +345,8 @@ function App() {
   // Guardar actividades
   useEffect(() => {
     if (!cargando && actividades.length > 0) {
-      console.log('💾 Actividades actualizadas en memoria:', actividades.length)
+      console.log('💾 Actividades actualizadas:', actividades.length)
+      localStorage.setItem('actividades', JSON.stringify(actividades))
       // En producción con Google Sheets:
       // const sheetsService = new SheetsService()
       // await sheetsService.updateActividades(actividades)

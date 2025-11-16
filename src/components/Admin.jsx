@@ -97,7 +97,9 @@ function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizar
 
     const nuevaActividad = {
       id: Date.now(),
-      ...actividadForm
+      ...actividadForm,
+      // Crear array de imágenes si hay una imagen
+      imagenes: actividadForm.imagen ? [actividadForm.imagen] : []
     }
 
     setActividades([...actividades, nuevaActividad])
@@ -135,7 +137,11 @@ function Admin({ actividades, setActividades, onCerrar, onResetear, onActualizar
       act.id === modoEdicion 
         ? { 
             ...act, 
-            ...actividadForm
+            ...actividadForm,
+            // Actualizar también el array de imágenes si existe
+            imagenes: actividadForm.imagen 
+              ? [actividadForm.imagen, ...(act.imagenes?.slice(1) || [])]
+              : act.imagenes
           }
         : act
     )
