@@ -235,7 +235,7 @@ function App() {
     const cargarActividades = async () => {
       try {
         console.log('📥 Cargando actividades desde el servidor...')
-        const response = await fetch('/data/actividades.json')
+        const response = await fetch('/api/get-actividades.php')
         if (response.ok) {
           const data = await response.json()
           if (data && data.length > 0) {
