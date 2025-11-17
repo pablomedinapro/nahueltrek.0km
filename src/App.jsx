@@ -229,8 +229,33 @@ function App() {
     }
   ]
 
-  const [actividades, setActividades] = useState(actividadesIniciales)
-  const [cargando, setCargando] = useState(false)
+  const [actividades, setActividades] = useState([])
+  const [cargando, setCargando] = useState(true)
+
+  // Cargar actividades desde el servidor
+  useEffect(() => {
+    const cargarActividades = async () => {
+      try {
+        console.log('📥 Cargando actividades desde el servidor...')
+        const response = await fetch('/api/actividades')
+        if (response.ok) {
+          const data = await response.json()
+          console.log('✅ Actividades cargadas:', data.length)
+          setActividades(data)
+        } else {
+          console.log('⚠️ Usando actividades iniciales')
+          setActividades(actividadesIniciales)
+        }
+      } catch (error) {
+        console.error('❌ Error al cargar actividades:', error)
+        console.log('⚠️ Usando actividades iniciales')
+        setActividades(actividadesIniciales)
+      } finally {
+        setCargando(false)
+      }
+    }
+    cargarActividades()
+  }, [])
 
   // Cargar lugares desde JSON local o localStorage
   useEffect(() => {
@@ -311,15 +336,29 @@ function App() {
     }
   }, [lugares])
 
-  // Guardar actividades
+  // Guardar actividades en el servidor
   useEffect(() => {
-    if (actividades.length > 0) {
-      console.log('💾 Actividades actualizadas en memoria:', actividades.length)
-      // En producción con Google Sheets:
-      // const sheetsService = new SheetsService()
-      // await sheetsService.updateActividades(actividades)
+    if (!cargando && actividades.length > 0) {
+      const guardarActividades = async () => {
+        try {
+          console.log('💾 Guardando actividades en el servidor...')
+          const response = await fetch('/api/actividades', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(actividades)
+          })
+          if (response.ok) {
+            console.log('✅ Actividades guardadas exitosamente')
+          }
+        } catch (error) {
+          console.error('❌ Error al guardar actividades:', error)
+        }
+      }
+      guardarActividades()
     }
-  }, [actividades])
+  }, [actividades, cargando])
 
   const formatearFecha = (fecha) => {
     const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
