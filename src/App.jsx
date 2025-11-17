@@ -50,11 +50,9 @@ function App() {
       titulo: 'Trekking PN Nahuelbuta',
       descripcion: 'Sendero Coihue - 9 km (ida-vuelta)',
       dificultad: 'Medio',
-      precio: '$42,000',
+      precio: '$50,000',
       imagenes: [
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-        'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800',
-        'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=800'
+       
       ]
     },
     {
@@ -237,11 +235,16 @@ function App() {
     const cargarActividades = async () => {
       try {
         console.log('📥 Cargando actividades desde el servidor...')
-        const response = await fetch('/api/actividades')
+        const response = await fetch('/data/actividades.json')
         if (response.ok) {
           const data = await response.json()
-          console.log('✅ Actividades cargadas:', data.length)
-          setActividades(data)
+          if (data && data.length > 0) {
+            console.log('✅ Actividades cargadas:', data.length)
+            setActividades(data)
+          } else {
+            console.log('⚠️ Usando actividades iniciales')
+            setActividades(actividadesIniciales)
+          }
         } else {
           console.log('⚠️ Usando actividades iniciales')
           setActividades(actividadesIniciales)
@@ -342,7 +345,7 @@ function App() {
       const guardarActividades = async () => {
         try {
           console.log('💾 Guardando actividades en el servidor...')
-          const response = await fetch('/api/actividades', {
+          const response = await fetch('/api/save-actividades.php', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -350,7 +353,10 @@ function App() {
             body: JSON.stringify(actividades)
           })
           if (response.ok) {
-            console.log('✅ Actividades guardadas exitosamente')
+            const result = await response.json()
+            console.log('✅ Actividades guardadas exitosamente:', result.count)
+          } else {
+            console.error('❌ Error al guardar:', response.statusText)
           }
         } catch (error) {
           console.error('❌ Error al guardar actividades:', error)
