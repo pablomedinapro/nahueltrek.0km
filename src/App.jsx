@@ -15,6 +15,46 @@ import ndr6 from '../img/d6a66ad7-3bbb-498c-b8d1-a33d65726a94.jfif'
 import ndr7 from '../img/1e33a31e-d9fc-4aa7-b8a1-1109f8cff0df.jfif'
 
 function App() {
+                // Actividades iniciales por defecto
+                const actividadesIniciales = [
+                  {
+                    id: 1,
+                    fecha: '2025-12-01',
+                    titulo: 'Trekking Volcán Llaima',
+                    descripcion: 'Ascenso al Llaima desde Conguillío',
+                    dificultad: 'Alto',
+                    precio: '$60,000',
+                    imagenes: [
+                      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800',
+                      'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800'
+                    ]
+                  },
+                  {
+                    id: 2,
+                    fecha: '2025-12-10',
+                    titulo: 'Senderismo Laguna Verde',
+                    descripcion: 'Ruta familiar en Parque Nacional',
+                    dificultad: 'Bajo',
+                    precio: '$25,000',
+                    imagenes: [
+                      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800'
+                    ]
+                  }
+                ]
+              // Estado para modal de destinos
+              const [destinosAbierto, setDestinosAbierto] = useState(false)
+            // Estado para modal de contacto
+            const [mostrarModalContacto, setMostrarModalContacto] = useState(false)
+          // Estado para autenticación
+          const [autenticado, setAutenticado] = useState(false)
+          const [mostrarLogin, setMostrarLogin] = useState(false)
+        // Estado para lugares
+        const [lugares, setLugares] = useState([])
+        const [cargandoLugares, setCargandoLugares] = useState(true)
+      // Estado para reservas
+      const [reservas, setReservas] = useState([])
+    // Estado para el orden de listado (ascendente/descendente)
+    const [ordenAscendente, setOrdenAscendente] = useState(true)
   const [menuAbierto, setMenuAbierto] = useState(false)
   const [formularioAbierto, setFormularioAbierto] = useState(false)
   const [actividadSeleccionada, setActividadSeleccionada] = useState(null)
@@ -22,210 +62,7 @@ function App() {
   const [imagenesVersion, setImagenesVersion] = useState(0) // Para forzar recarga de imágenes
   const [adminAbierto, setAdminAbierto] = useState(false)
   const [reservasAbierto, setReservasAbierto] = useState(false)
-  const [destinosAbierto, setDestinosAbierto] = useState(false)
-  const [mostrarModalContacto, setMostrarModalContacto] = useState(false)
-  const [autenticado, setAutenticado] = useState(false)
-  const [mostrarLogin, setMostrarLogin] = useState(false)
-  const [passwordInput, setPasswordInput] = useState('')
-  const [lugares, setLugares] = useState([])
-  const [cargandoLugares, setCargandoLugares] = useState(true)
-  const [reservas, setReservas] = useState([])
-  const [formData, setFormData] = useState({
-    nombre: '',
-    email: '',
-    telefono: '',
-    cantidadPersonas: '1',
-    mensaje: ''
-  })
-  
-  const PASSWORD_ADMIN = 'nahueltrek2025' // Cambiar por una contraseña segura
-  const VERSION_ACTIVIDADES = 'v3.0' // Versión del calendario - Nov + Dic 2025
-  
-  // Cargar actividades desde localStorage
-  const actividadesIniciales = [
-    // NOVIEMBRE 2025
-    {
-      id: 101,
-      fecha: '2025-11-15',
-      titulo: 'Trekking PN Nahuelbuta',
-      descripcion: 'Sendero Coihue - 9 km (ida-vuelta)',
-      dificultad: 'Medio',
-      precio: '$50,000',
-      imagenes: [
-       
-      ]
-    },
-    {
-      id: 102,
-      fecha: '2025-11-16',
-      titulo: 'Trekking Salto del Indio',
-      descripcion: 'Cascada + Bosque Nativo - 7 km',
-      dificultad: 'Bajo',
-      precio: '$38,000',
-      imagenes: [
-        'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800',
-        'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800',
-        'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800'
-      ]
-    },
-    {
-      id: 103,
-      fecha: '2025-11-22',
-      titulo: 'Trekking PN Conguillio',
-      descripcion: 'Laguna Arcoiris - 12 km (ida-vuelta)',
-      dificultad: 'Medio',
-      precio: '$47,000',
-      imagenes: [
-        'https://images.unsplash.com/photo-1551632811-561732d1e306?w=800',
-        'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800',
-        'https://images.unsplash.com/photo-1511593358241-7eea1f3c84e5?w=800'
-      ]
-    },
-    {
-      id: 104,
-      fecha: '2025-11-23',
-      titulo: 'Trekking PN Tolhuaca',
-      descripcion: 'Sendero Salto Malleco - 10 km',
-      dificultad: 'Medio',
-      precio: '$45,000',
-      imagenes: [
-        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800',
-        'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800',
-        'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800'
-      ]
-    },
-    {
-      id: 105,
-      fecha: '2025-11-29',
-      titulo: 'Trekking Laguna Pirquinco',
-      descripcion: '16 km (ida-vuelta) - Aventura',
-      dificultad: 'Medio - Alto',
-      precio: '$52,000',
-      imagenes: [
-        'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800',
-        'https://images.unsplash.com/photo-1511593358241-7eea1f3c84e5?w=800',
-        'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800'
-      ]
-    },
-    {
-      id: 106,
-      fecha: '2025-11-30',
-      titulo: 'Trekking Termas Alpehue',
-      descripcion: 'Sendero Termal - 8 km + Relax',
-      dificultad: 'Bajo',
-      precio: '$48,000',
-      imagenes: [
-        'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=800',
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-        'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=800'
-      ]
-    },
-    // DICIEMBRE 2025
-    {
-      id: 1,
-      fecha: '2025-12-06',
-      titulo: 'Trekking PN Nahuelbuta',
-      descripcion: 'Sendero Piedra del Águila - 12 km',
-      dificultad: 'Medio',
-      precio: '$45,000',
-      imagenes: [
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-        'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800',
-        'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=800'
-      ]
-    },
-    {
-      id: 2,
-      fecha: '2025-12-07',
-      titulo: 'Trekking PN Conguillio',
-      descripcion: 'Volcán Llaima - 18 km (ida-vuelta)',
-      dificultad: 'Alto',
-      precio: '$55,000',
-      imagenes: [
-        'https://images.unsplash.com/photo-1551632811-561732d1e306?w=800',
-        'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800',
-        'https://images.unsplash.com/photo-1511593358241-7eea1f3c84e5?w=800'
-      ]
-    },
-    {
-      id: 3,
-      fecha: '2025-12-13',
-      titulo: 'Trekking PN Nahuelbuta',
-      descripcion: 'Circuito Araucarias Milenarias - 10 km',
-      dificultad: 'Medio',
-      precio: '$45,000',
-      imagenes: [
-        'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=800',
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-        'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=800'
-      ]
-    },
-    {
-      id: 4,
-      fecha: '2025-12-20',
-      titulo: 'Trekking Termas Alpehue',
-      descripcion: 'Sendero Termal - 8 km + Relax',
-      dificultad: 'Bajo',
-      precio: '$50,000',
-      imagenes: [
-        'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800',
-        'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800',
-        'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800'
-      ]
-    },
-    {
-      id: 5,
-      fecha: '2025-12-21',
-      titulo: 'Trekking PN Tolhuaca',
-      descripcion: 'Laguna Malleco - 14 km (ida-vuelta)',
-      dificultad: 'Medio - Alto',
-      precio: '$48,000',
-      imagenes: [
-        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800',
-        'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800',
-        'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800'
-      ]
-    },
-    {
-      id: 6,
-      fecha: '2025-12-26',
-      titulo: 'Trekking PN Nahuelbuta - Especial Navidad',
-      descripcion: 'Cerro Anay - 16 km (ida-vuelta)',
-      dificultad: 'Medio - Alto',
-      precio: '$52,000',
-      imagenes: [
-        'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800',
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-        'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=800'
-      ]
-    },
-    {
-      id: 7,
-      fecha: '2025-12-27',
-      titulo: 'Trekking Laguna Pirquinco',
-      descripcion: '20 km (ida-vuelta) - Aventura Total',
-      dificultad: 'Alto',
-      precio: '$58,000',
-      imagenes: [
-        'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800',
-        'https://images.unsplash.com/photo-1511593358241-7eea1f3c84e5?w=800',
-        'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800'
-      ]
-    },
-    {
-      id: 8,
-      fecha: '2025-12-28',
-      titulo: 'City Tour Santiago',
-      descripcion: 'Cerro San Cristóbal + Centro Histórico',
-      dificultad: 'Bajo',
-      precio: '$35,000',
-      imagenes: [
-        'https://images.unsplash.com/photo-1570708938230-cb0b55a67e2e?w=800',
-        'https://images.unsplash.com/photo-1611348524140-53c9a25263d6?w=800',
-        'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800'
-      ]
-    }
-  ]
+
 
   const [actividades, setActividades] = useState([])
   const [cargando, setCargando] = useState(true)
@@ -955,168 +792,142 @@ ${formData.mensaje || 'Sin mensaje adicional'}
           }}>
             📅 Próximas Actividades
           </h2>
-          
-          {agruparPorMes().map((grupo, idx) => (
-            <div key={idx} className="mb-5">
-              <h3 className="mb-4 pb-2" style={{
-                fontSize: 'clamp(1.5rem, 4vw, 2rem)',
-                color: '#1e3a5f',
-                borderBottom: '3px solid #ff9800',
-                display: 'inline-block',
-                paddingBottom: '0.5rem'
-              }}>
-                {grupo.nombre}
-              </h3>
-              
-              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                {grupo.actividades.map((actividad) => (
-                <div key={actividad.id} className="col">
+          {/* Botón para invertir el orden */}
+          <div className="mb-4 d-flex justify-content-center">
+            <button
+              onClick={() => setOrdenAscendente((prev) => !prev)}
+              className="btn btn-primary shadow-sm px-4 py-2 fw-bold"
+              style={{
+                borderRadius: 12,
+                background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a8f 100%)',
+                border: 'none',
+                fontSize: '1.1rem',
+                minWidth: 220,
+                transition: 'background 0.2s',
+                boxShadow: '0 2px 8px rgba(30,58,95,0.10)'
+              }}
+            >
+              Ordenar {ordenAscendente ? '↓ Descendente' : '↑ Ascendente'}
+            </button>
+          </div>
+          {/* Listado de actividades ordenadas por fecha */}
+          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {[...actividades]
+              .sort((a, b) => ordenAscendente ? a.fecha.localeCompare(b.fecha) : b.fecha.localeCompare(a.fecha))
+              .map((actividad) => (
+                <div key={actividad.id} className="col d-flex align-items-stretch">
                   <div 
-                    className="card h-100 card-hover"
+                    className="card h-100 card-hover shadow-sm w-100"
                     style={{
                       borderRadius: '16px',
-                      boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
                       overflow: 'hidden',
                       border: '1px solid rgba(0,0,0,0.05)'
                     }}
                   >
-                {/* Imagen de la actividad */}
-                <div style={{
-                  position: 'relative',
-                  width: '100%',
-                  height: '250px',
-                  overflow: 'hidden',
-                  backgroundColor: '#f0f0f0'
-                }}>
-                  <img 
-                    key={`${actividad.id}-${imagenesVersion}`}
-                    src={`${actividad.imagen || actividad.imagenes?.[0] || 'https://via.placeholder.com/400x250?text=Sin+Imagen'}${(actividad.imagen || actividad.imagenes?.[0] || '').includes('/uploads/') ? '?v=' + imagenesVersion : ''}`}
-                    alt={actividad.titulo}
-                    style={{
+                    {/* Imagen de la actividad */}
+                    <div style={{
+                      position: 'relative',
                       width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      transition: 'transform 0.3s ease'
-                    }}
-                  />
-                  
-                  {/* Badge de fecha flotante */}
-                  <div style={{
-                    position: 'absolute',
-                    top: '15px',
-                    right: '15px',
-                    backgroundColor: 'rgba(30, 58, 95, 0.95)',
-                    color: 'white',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '8px',
-                    fontSize: '0.85rem',
-                    fontWeight: 'bold',
-                    backdropFilter: 'blur(10px)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-                  }}>
-                    {new Date(actividad.fecha + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
-                  </div>
-                </div>
-              
-                <div style={{ padding: '1.5rem' }}>
-                  <h3 style={{ 
-                    color: '#1e3a5f', 
-                    marginBottom: '0.5rem',
-                    fontSize: 'clamp(1.2rem, 3vw, 1.4rem)',
-                    fontWeight: '700'
-                  }}>
-                    {actividad.titulo}
-                  </h3>
-                  
-                  <p style={{ 
-                    color: '#666', 
-                    marginBottom: '0.5rem',
-                    lineHeight: '1.6',
-                    fontSize: '0.95rem'
-                  }}>
-                    📍 {actividad.descripcion}
-                  </p>
-
-                  {actividad.lugarId && lugares.length > 0 && (() => {
-                    const lugar = lugares.find(l => l.id === actividad.lugarId)
-                    return lugar ? (
-                      <p style={{ 
-                        color: '#ff6b35', 
-                        marginBottom: '1rem',
-                        fontSize: '0.85rem',
-                        fontWeight: '600'
-                      }}>
-                        🗺️ {lugar.titulo}
-                      </p>
-                    ) : null
-                  })()}
-                  
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginTop: '1rem',
-                    paddingTop: '1rem',
-                    borderTop: '1px solid #e0e0e0'
-                  }}>
-                    <div>
-                      <span style={{
-                        background: `linear-gradient(135deg, ${getDificultadColor(actividad.dificultad)}, ${getDificultadColor(actividad.dificultad)}dd)`,
-                        color: 'white',
-                        padding: '0.4rem 1rem',
-                        borderRadius: '20px',
-                        fontSize: '0.8rem',
-                        fontWeight: 'bold',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-                      }}>
-                        🏔️ {actividad.dificultad}
-                      </span>
-                    </div>
-                    
-                    <div style={{ 
-                      color: '#1e3a5f',
-                      fontSize: '1.4rem',
-                      fontWeight: 'bold'
+                      height: '220px',
+                      overflow: 'hidden',
+                      backgroundColor: '#f0f0f0'
                     }}>
-                      {actividad.precio}
+                      <img 
+                        key={`${actividad.id}-${imagenesVersion}`}
+                        src={`${actividad.imagen || actividad.imagenes?.[0] || 'https://via.placeholder.com/400x250?text=Sin+Imagen'}${(actividad.imagen || actividad.imagenes?.[0] || '').includes('/uploads/') ? '?v=' + imagenesVersion : ''}`}
+                        alt={actividad.titulo}
+                        className="img-fluid w-100 h-100"
+                        style={{
+                          objectFit: 'cover',
+                          transition: 'transform 0.3s ease'
+                        }}
+                      />
+                      {/* Badge de fecha flotante */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '15px',
+                        right: '15px',
+                        backgroundColor: 'rgba(30, 58, 95, 0.95)',
+                        color: 'white',
+                        padding: '0.5rem 1rem',
+                        borderRadius: '8px',
+                        fontSize: '0.85rem',
+                        fontWeight: 'bold',
+                        backdropFilter: 'blur(10px)',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                      }}>
+                        {new Date(actividad.fecha + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
+                      </div>
+                    </div>
+                    <div className="p-3 p-md-4 d-flex flex-column justify-content-between h-100">
+                      <div>
+                        <h3 style={{ 
+                          color: '#1e3a5f', 
+                          marginBottom: '0.5rem',
+                          fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
+                          fontWeight: '700'
+                        }}>
+                          {actividad.titulo}
+                        </h3>
+                        <p className="mb-2" style={{ 
+                          color: '#666', 
+                          lineHeight: '1.6',
+                          fontSize: '0.97rem'
+                        }}>
+                          📍 {actividad.descripcion}
+                        </p>
+                        {actividad.lugarId && lugares.length > 0 && (() => {
+                          const lugar = lugares.find(l => l.id === actividad.lugarId)
+                          return lugar ? (
+                            <p style={{ 
+                              color: '#ff6b35', 
+                              marginBottom: '1rem',
+                              fontSize: '0.85rem',
+                              fontWeight: '600'
+                            }}>
+                              🗺️ {lugar.titulo}
+                            </p>
+                          ) : null
+                        })()}
+                      </div>
+                      <div className="mt-auto">
+                        <div className="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                          <span style={{
+                            background: `linear-gradient(135deg, ${getDificultadColor(actividad.dificultad)}, ${getDificultadColor(actividad.dificultad)}dd)`,
+                            color: 'white',
+                            padding: '0.4rem 1rem',
+                            borderRadius: '20px',
+                            fontSize: '0.8rem',
+                            fontWeight: 'bold',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                          }}>
+                            🏔️ {actividad.dificultad}
+                          </span>
+                          <span style={{ 
+                            color: '#1e3a5f',
+                            fontSize: '1.2rem',
+                            fontWeight: 'bold'
+                          }}>
+                            {actividad.precio}
+                          </span>
+                        </div>
+                        <button 
+                          onClick={() => abrirFormulario(actividad)}
+                          className="btn btn-success w-100 mt-3 fw-bold"
+                          style={{
+                            borderRadius: '8px',
+                            fontSize: '1rem',
+                            boxShadow: '0 4px 12px rgba(30, 58, 95, 0.13)'
+                          }}
+                        >
+                          🎒 Reservar Ahora
+                        </button>
+                      </div>
                     </div>
                   </div>
-                
-                  <button 
-                    onClick={() => abrirFormulario(actividad)}
-                    style={{
-                      width: '100%',
-                      marginTop: '1rem',
-                      padding: '0.9rem',
-                      background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a8f 100%)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      fontSize: '1rem',
-                      fontWeight: 'bold',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      boxShadow: '0 4px 12px rgba(30, 58, 95, 0.3)'
-                    }}
-                    onMouseOver={(e) => {
-                      e.target.style.transform = 'translateY(-2px)'
-                      e.target.style.boxShadow = '0 6px 16px rgba(30, 58, 95, 0.4)'
-                    }}
-                    onMouseOut={(e) => {
-                      e.target.style.transform = 'translateY(0)'
-                      e.target.style.boxShadow = '0 4px 12px rgba(30, 58, 95, 0.3)'
-                    }}
-                  >
-                    🎒 Reservar Ahora
-                  </button>
                 </div>
-                </div>
-              </div>
-            ))
-          }
+              ))}
           </div>
-            </div>
-          ))}
         </div>
       </section>
 
